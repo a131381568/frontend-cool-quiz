@@ -9,6 +9,7 @@ import { defineStore } from "pinia";
 import { db } from "@/utils/firebase";
 import { addDoc, getFirestore, collection, getDocs } from "firebase/firestore";
 const memberCollection = String(import.meta.env.VITE_APP_FIREBASE_COLLECTION);
+// import bcrypt from "bcrypt";
 
 export const useStore = defineStore("main", {
   state: () => ({
@@ -180,17 +181,22 @@ export const useStore = defineStore("main", {
       console.log(cityList);
       return cityList;
     },
-    async registerMember() {
+    async registerMember(name: string, email: string, password: string) {
       try {
+        // const hash = (text: string) => bcrypt.hash(text, 2);
+        // const hashedPassword = await hash(password);
         const docRef = await addDoc(collection(db, memberCollection), {
-          first: "Ada",
-          last: "Lovelace",
-          born: 1815,
+          name: name,
+          mail: email,
+          password: password,
         });
         console.log("已存入此id", docRef.id);
       } catch (e) {
         console.error("Error adding document: ", e);
       }
+    },
+    loginMember(email: string, password: string) {
+      console.log(email, password);
     },
   },
   getters: {

@@ -141,13 +141,39 @@
     @apply right-2 bottom-2;
   }
   /* 登入 */
-  .login-btn {
+  .login-container {
+    @apply flex flex-row h-screen items-center justify-center bg-slate-300;
+  }
+  .login-form {
+    @apply w-1of5 p-10 bg-slate-800;
+  }
+  .login-from-header {
+    @apply h-44 mb-8 text-center;
+  }
+  .login-from-header-title {
+    @apply font-bold text-2xl text-white tracking-widest pt-1;
+  }
+  .login-btn,
+  .register-btn {
     @apply text-white text-center bg-slate-500 py-1 px-6 font-bold;
   }
-  .register-btn {
-    @apply bg-teal-100 text-center py-1 px-6 font-bold;
+  .register-tab-btn,
+  .login-tab-btn {
+    @apply text-center py-1 px-6 font-bold border border-solid border-slate-200 text-white;
   }
-  .login-form-btn-group {
+  .login-form-btn-group,
+  .register-form-btn-group {
     @apply grid grid-cols-2 gap-4;
+  }
+  .login-from-content input,
+  .register-from-content input {
+    @apply w-full block mb-2;
+  }
+  .login-from-content input[name="password"],
+  .register-from-content input[name="password"] {
+    @apply mb-3;
+  }
+  .from-alert-msg {
+    @apply text-orange-600 text-sm block mt-2;
   }
 }

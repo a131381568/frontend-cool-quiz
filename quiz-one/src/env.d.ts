@@ -1,6 +1,9 @@
 /// <reference types="vite/client" />
 
+declare module "bcrypt";
+declare module "vee-validate";
 declare module "@vueuse/head";
+declare module "throttle-debounce";
 
 declare module "*.vue" {
   import { DefineComponent } from "vue";

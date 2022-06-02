@@ -7,5 +7,5 @@ div
 <script setup lang="ts">
 const store = useStore();
 // store.registerMember();
-store.downloadMemberList();
+// store.downloadMemberList();
 </script>

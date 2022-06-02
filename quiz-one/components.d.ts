@@ -2,22 +2,17 @@
 // We suggest you to commit this file into source control
 // Read more: https://github.com/vuejs/vue-next/pull/3399
 
-declare module '@vue/runtime-core' {
+declare module "@vue/runtime-core" {
   export interface GlobalComponents {
-    Card: typeof import('./src/components/Card.vue')['default']
-    'Card - 複製': typeof import('./src/components/Card - 複製.vue')['default']
-    Combination: typeof import('./src/components/Combination.vue')['default']
-    Header: typeof import('./src/components/Header.vue')['default']
-    HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
-    LightBox: typeof import('./src/components/LightBox.vue')['default']
-    List: typeof import('./src/components/List.vue')['default']
-    Pagination: typeof import('./src/components/Pagination.vue')['default']
-    'Pagination - 複製': typeof import('./src/components/Pagination - 複製.vue')['default']
-    RouterLink: typeof import('vue-router')['RouterLink']
-    RouterView: typeof import('vue-router')['RouterView']
-    TopHeader: typeof import('./src/components/TopHeader.vue')['default']
-    'TopHeader - 複製': typeof import('./src/components/TopHeader - 複製.vue')['default']
+    Card: typeof import("./src/components/Card.vue")["default"];
+    Combination: typeof import("./src/components/Combination.vue")["default"];
+    LightBox: typeof import("./src/components/LightBox.vue")["default"];
+    List: typeof import("./src/components/List.vue")["default"];
+    Pagination: typeof import("./src/components/Pagination.vue")["default"];
+    RouterLink: typeof import("vue-router")["RouterLink"];
+    RouterView: typeof import("vue-router")["RouterView"];
+    TopHeader: typeof import("./src/components/TopHeader.vue")["default"];
   }
 }
 
-export { }
+export {};
