@@ -29,7 +29,6 @@ const isFacoritePage = computed(() => route.name === "Facorite");
 if (isFacoritePage.value) {
   store.showCollectList();
 } else if (store.oriConnectionsList.length > 0) {
-  console.log("恢復");
   store.showConnectionsList();
 } else {
   store.downLoadTotalUserList();

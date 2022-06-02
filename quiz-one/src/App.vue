@@ -1,5 +1,7 @@
-<template>
-  <router-view></router-view>
+<template lang="pug">
+router-view
+AlertBox
+LoadingSpinners
 </template>
 <script setup lang="ts">
 const route = useRoute();

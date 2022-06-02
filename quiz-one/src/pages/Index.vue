@@ -8,4 +8,5 @@ div
 const store = useStore();
 // store.registerMember();
 // store.downloadMemberList();
+// store.registerMember("陳小杉aa", "wang@gamil.com", "zxcvbnm");
 </script>

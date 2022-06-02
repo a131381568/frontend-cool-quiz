@@ -4,12 +4,22 @@ import {
   ResponseUserListType,
   userListType,
   pageReqInfoType,
+  singleMemberInfo,
 } from "@/type/types";
 import { defineStore } from "pinia";
 import { db } from "@/utils/firebase";
-import { addDoc, getFirestore, collection, getDocs } from "firebase/firestore";
+import {
+  addDoc,
+  getFirestore,
+  collection,
+  getDocs,
+  runTransaction,
+} from "firebase/firestore";
+import bcrypt from "bcryptjs";
+import codeStateMaster from "@/config/member-code";
+
 const memberCollection = String(import.meta.env.VITE_APP_FIREBASE_COLLECTION);
-// import bcrypt from "bcrypt";
+const saltRounds = Number(import.meta.env.VITE_APP_SALTROUNDS);
 
 export const useStore = defineStore("main", {
   state: () => ({
@@ -79,13 +89,16 @@ export const useStore = defineStore("main", {
       nat: "",
     },
     isCollectUserList: <singleUserType[]>[],
+    alertBoxState: false,
+    alertBoxMsg: "",
+    loadingState: false,
+    userSelfName: "",
   }),
   actions: {
     changeConnectionsMode(mode: string) {
       this.connectionsMode = mode;
     },
     showLightBox(mail: string) {
-      console.log("lightBoxState-show!!!");
       const array: singleUserType[] = this.connectionsList;
       const filterItem = array.filter((item) => item.email === mail);
       if (filterItem.length > 0) {
@@ -106,7 +119,7 @@ export const useStore = defineStore("main", {
         version: "",
       };
       const userData: any = await totalUserReq();
-      console.log(userData);
+      // console.log(userData);
       if (userData.results) {
         userListRes = userData.results;
         userListRes.forEach((item) => {
@@ -154,14 +167,10 @@ export const useStore = defineStore("main", {
       this.isCollectUserList = newCollectUserList;
     },
     showCollectList() {
-      console.log("oriL ", this.connectionsList);
       this.oriConnectionsList = JSON.parse(
         JSON.stringify(this.connectionsList)
       );
       this.oriConnectionsLength = this.connectionsLength;
-      // this.connectionsLength = 0;
-      // this.connectionsCount = 0;
-      // this.connectionsPage = 0;
       this.connectionsList = JSON.parse(JSON.stringify(this.isCollectUserList));
       this.connectionsLength = this.isCollectUserList.length;
       this.connectionsCount = 30;
@@ -175,28 +184,115 @@ export const useStore = defineStore("main", {
       this.connectionsPage = 1;
     },
     async downloadMemberList() {
-      const citiesCol = collection(db, memberCollection);
-      const citySnapshot = await getDocs(citiesCol);
-      const cityList = citySnapshot.docs.map((doc) => doc.data());
-      console.log(cityList);
-      return cityList;
+      const memberCol = collection(db, memberCollection);
+      const memberSnapshot = await getDocs(memberCol);
+      const memberList = memberSnapshot.docs.map((doc) => doc.data());
+      return memberList;
     },
     async registerMember(name: string, email: string, password: string) {
-      try {
-        // const hash = (text: string) => bcrypt.hash(text, 2);
-        // const hashedPassword = await hash(password);
+      // 先檢查信箱有沒有重複
+      const memberList = await this.downloadMemberList();
+      const isRepeat = await memberList.some((item) => item.mail === email);
+      let resCode = 0;
+      if (isRepeat) {
+        resCode = -1;
+      } else {
+        // 進行註冊
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
         const docRef = await addDoc(collection(db, memberCollection), {
           name: name,
           mail: email,
-          password: password,
+          password: hashedPassword,
+          facorite: [],
         });
-        console.log("已存入此id", docRef.id);
-      } catch (e) {
-        console.error("Error adding document: ", e);
+        if (docRef.id) {
+          resCode = 1;
+        } else {
+          resCode = -2;
+        }
       }
+      const resMsg = await codeStateMaster.transformMemberMsg(
+        "registerMember",
+        resCode
+      );
+      return {
+        code: resCode,
+        msg: resMsg,
+      };
     },
-    loginMember(email: string, password: string) {
-      console.log(email, password);
+    async loginMember(email: string, password: string) {
+      let resCode = 0;
+      // 先檢查信箱是否有這個人
+      const memberList = await this.downloadMemberList();
+      // let hasMember:singleMemberInfo[] = []
+      const hasMember = await memberList.filter((item) => item.mail === email);
+      if (hasMember.length > 0) {
+        // 檢查密碼
+        const passwordIsTrue = await bcrypt.compare(
+          password,
+          hasMember[0].password
+        );
+        if (!passwordIsTrue) {
+          // 密碼錯誤
+          resCode = -2;
+        } else {
+          // 登入成功
+          resCode = 1;
+          // 載入個人資料
+          this.userSelfName = hasMember[0].name;
+          this.isCollectUserList = hasMember[0].facorite;
+        }
+      } else if (hasMember.length === 0) {
+        // 無此帳號
+        resCode = -1;
+      } else {
+        // 不明原因錯誤
+        resCode = -3;
+      }
+      const resMsg = await codeStateMaster.transformMemberMsg(
+        "loginMember",
+        resCode
+      );
+      return {
+        code: resCode,
+        msg: resMsg,
+      };
+    },
+    showAlertBox(msg: string) {
+      this.alertBoxMsg = msg;
+      this.alertBoxState = true;
+    },
+    hideAlertBox() {
+      this.loadingStateHide();
+      this.alertBoxMsg = "";
+      this.alertBoxState = false;
+    },
+    loadingStateShow() {
+      this.loadingState = true;
+    },
+    loadingStateHide() {
+      this.loadingState = false;
+    },
+    setUserSelfInfo(name: string) {
+      this.userSelfName = name;
+    },
+    async addFireBaseMemberFacorite() {
+      try {
+        await runTransaction(db, async (transaction) => {
+          const sfDocRef = "EsiNgsnPuZumfUXCpeaC";
+
+          const sfDoc = await transaction.get(sfDocRef);
+          if (!sfDoc.exists()) {
+            throw "Document does not exist!";
+          }
+
+          const newPopulation = sfDoc.data().name + 1;
+          transaction.update(sfDocRef, { name: newPopulation });
+        });
+        console.log("Transaction successfully committed!");
+      } catch (e) {
+        console.log("Transaction failed: ", e);
+      }
     },
   },
   getters: {
@@ -225,19 +321,16 @@ export const useStore = defineStore("main", {
       return calTotalPagi;
     },
     get_calTotalPagi: (state) => {
-      // this.connectionsPage 現在在第幾頁
       const actionPai = state.connectionsPage;
       const totalLength = state.connectionsLength;
       const viewCount = state.connectionsCount;
       const calTotalPagi = Math.ceil(totalLength / viewCount);
-      console.log(`
-      actionPai:      ${actionPai}
-      calTotalPagi:   ${calTotalPagi}
-      `);
-      // && calTotalPagi <= 5
+      // console.log(`
+      // actionPai:      ${actionPai}
+      // calTotalPagi:   ${calTotalPagi}
+      // `);
       if (actionPai <= 3) {
         // 前 3 頁
-        console.log("first!!");
         if (calTotalPagi >= 5) {
           return 5;
         } else {
@@ -248,11 +341,7 @@ export const useStore = defineStore("main", {
         1 + actionPai === calTotalPagi ||
         2 + actionPai === calTotalPagi
       ) {
-        console.log("last3");
         // 結尾 3 頁
-        // if (actionPai === 4 && calTotalPagi >= 6) {
-        //   return [2, 3, 4, 5, 6];
-        // } else {
         const lastArray = [
           calTotalPagi - 4,
           calTotalPagi - 3,
@@ -262,7 +351,6 @@ export const useStore = defineStore("main", {
         ];
         const newLastArray = lastArray.filter((item) => item > 0);
         return newLastArray;
-        // }
       } else {
         // 前後兩頁都有的情況
         const calcArray = [
@@ -272,7 +360,6 @@ export const useStore = defineStore("main", {
           actionPai + 1,
           actionPai + 2,
         ];
-        console.log(calcArray);
         return calcArray;
       }
     },
@@ -289,6 +376,15 @@ export const useStore = defineStore("main", {
         }
       });
       return calcList;
+    },
+    get_alertBoxState: (state) => {
+      return state.alertBoxState;
+    },
+    get_alertBoxMsg: (state) => {
+      return state.alertBoxMsg;
+    },
+    get_userSelfName: (state) => {
+      return state.userSelfName;
     },
   },
 });

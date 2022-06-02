@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
 
-declare module "bcrypt";
+declare module "bcryptjs";
 declare module "vee-validate";
 declare module "@vueuse/head";
 declare module "throttle-debounce";

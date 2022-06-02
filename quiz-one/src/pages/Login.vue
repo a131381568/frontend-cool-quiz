@@ -65,20 +65,48 @@ const registerForm = ref({
     return { valid: false };
   },
 });
-// 送出表單
 
-const loginAction = debounce(2000, async () => {
+// 送出表單
+const loginAction = async () => {
   const { valid } = await loginForm.value.validate();
   if (valid) {
-    router.push("/connections");
+    // 先進 loading
+    await store.loadingStateShow();
+    // 請求
+    const res = await store.loginMember(loginMail.value, loginPassword.value);
+    // 回傳訊息
+    if (res.code > 0) {
+      loginMail.value = "";
+      loginPassword.value = "";
+      store.showAlertBox(res.msg);
+      router.push("/connections");
+    } else if (res.code < 0) {
+      store.showAlertBox(res.msg);
+    }
   }
-});
-const registerAction = debounce(2000, async () => {
+};
+const registerAction = async () => {
   const { valid } = await registerForm.value.validate();
   if (valid) {
-    console.log(registerName.value);
-    console.log(registerMail.value);
-    console.log(registerPassword.value);
+    // 先進 loading
+    await store.loadingStateShow();
+    // 請求
+    const res = await store.registerMember(
+      registerName.value,
+      registerMail.value,
+      registerPassword.value
+    );
+    // 回傳訊息
+    if (res.code > 0) {
+      registerName.value = "";
+      registerMail.value = "";
+      registerPassword.value = "";
+      store.showAlertBox(res.msg);
+      isRegisterShow.value = false;
+    } else if (res.code < 0) {
+      store.showAlertBox(res.msg);
+      isRegisterShow.value = false;
+    }
   }
-});
+};
 </script>

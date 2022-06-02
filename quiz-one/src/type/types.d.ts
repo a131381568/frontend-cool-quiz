@@ -63,20 +63,34 @@ type pageReqInfo = {
   version: string;
 };
 
+type loginMemberSingleRes = {
+  code: number;
+  msg: string;
+};
+
+type loginMemberArryRes = {
+  registerMember?: loginMemberSingleRes;
+};
+
+type singleMemberInfo = {
+  name: string;
+  mail: string;
+  password: string;
+  facorite?: singleUser[];
+};
+
+export type loginMemberSingleResType = loginMemberSingleRes;
+export type loginMemberArryResType = loginMemberArryRes;
 export type singleUserType = singleUser;
-
 export type pageReqInfoType = pageReqInfo;
-
 export type userListType = {
   info?: pageReqInfo;
   results?: singleUserType[];
 };
-
 export interface ResponseUserListType {
   info?: pageReqInfo;
   results?: singleUserType[];
 }
-
 export interface ResponseData {
   code: number;
   data?: any;

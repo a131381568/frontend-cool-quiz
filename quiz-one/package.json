@@ -8,11 +8,11 @@
     "start": "yarn dev & wait-on tcp:3000 -v"
   },
   "dependencies": {
-    "@types/bcrypt": "^5.0.0",
+    "@types/bcryptjs": "^2.4.2",
     "@types/throttle-debounce": "^5.0.0",
     "@vueuse/head": "^0.7.5",
     "axios": "^0.25.0",
-    "bcrypt": "^5.0.1",
+    "bcryptjs": "^2.4.3",
     "firebase": "^9.8.2",
     "firestore": "^1.1.6",
     "pinia": "~2.0",

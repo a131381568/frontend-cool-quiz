@@ -2,17 +2,19 @@
 // We suggest you to commit this file into source control
 // Read more: https://github.com/vuejs/vue-next/pull/3399
 
-declare module "@vue/runtime-core" {
+declare module '@vue/runtime-core' {
   export interface GlobalComponents {
-    Card: typeof import("./src/components/Card.vue")["default"];
-    Combination: typeof import("./src/components/Combination.vue")["default"];
-    LightBox: typeof import("./src/components/LightBox.vue")["default"];
-    List: typeof import("./src/components/List.vue")["default"];
-    Pagination: typeof import("./src/components/Pagination.vue")["default"];
-    RouterLink: typeof import("vue-router")["RouterLink"];
-    RouterView: typeof import("vue-router")["RouterView"];
-    TopHeader: typeof import("./src/components/TopHeader.vue")["default"];
+    AlertBox: typeof import('./src/components/AlertBox.vue')['default']
+    Card: typeof import('./src/components/Card.vue')['default']
+    Combination: typeof import('./src/components/Combination.vue')['default']
+    LightBox: typeof import('./src/components/LightBox.vue')['default']
+    List: typeof import('./src/components/List.vue')['default']
+    LoadingSpinners: typeof import('./src/components/LoadingSpinners.vue')['default']
+    Pagination: typeof import('./src/components/Pagination.vue')['default']
+    RouterLink: typeof import('vue-router')['RouterLink']
+    RouterView: typeof import('vue-router')['RouterView']
+    TopHeader: typeof import('./src/components/TopHeader.vue')['default']
   }
 }
 
-export {};
+export { }
