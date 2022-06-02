@@ -119,16 +119,38 @@ export const useStore = defineStore("main", {
     changePage(pagi: number) {
       this.connectionsPage = pagi;
     },
-    collectUserAction(userData: singleUserType) {
+    collectUserActionPush(userData: singleUserType) {
       const oriList: singleUserType[] = this.connectionsList;
       oriList.forEach((item) => {
         if (item.email === userData.email) {
-          item.collect = !item.collect;
+          item.collect = true;
         }
       });
       this.isCollectUserList.push(userData);
     },
+    collectUserActionPull(email: string) {
+      const oriList: singleUserType[] = this.connectionsList;
+      oriList.forEach((item) => {
+        if (item.email === email) {
+          item.collect = false;
+        }
+      });
+      // 備份清單
+      const backCollectUserList: singleUserType[] = this.oriConnectionsList;
+      backCollectUserList.forEach((item) => {
+        if (item.email === email) {
+          item.collect = false;
+        }
+      });
+      // 收藏清單
+      const oriCollectUserList: singleUserType[] = this.isCollectUserList;
+      const newCollectUserList = oriCollectUserList.filter(
+        (item) => item.email !== email
+      );
+      this.isCollectUserList = newCollectUserList;
+    },
     showCollectList() {
+      console.log("oriL ", this.connectionsList);
       this.oriConnectionsList = JSON.parse(
         JSON.stringify(this.connectionsList)
       );

@@ -41,8 +41,11 @@
   .connections-header {
     @apply flex justify-between pb-8;
   }
+  .facorite-btn-group {
+    @apply flex items-center;
+  }
   .facorite-btn-group a {
-    @apply font-semibold;
+    @apply font-semibold hover:opacity-50;
   }
   .facorite-btn-group [action-type="false"] {
     @apply opacity-50;
@@ -79,13 +82,17 @@
     @apply flex justify-center items-center my-12;
   }
   .pagination-container li {
-    @apply inline-block align-middle mx-1 p-1 w-8 text-center cursor-pointer;
+    @apply inline-block align-middle mx-1 p-1 w-8 text-center cursor-pointer hover:bg-slate-100 hover:rounded-full duration-300 transition-all;
   }
   .pagination-container li[action-pagi="true"] {
-    @apply bg-slate-100 rounded-full;
+    @apply bg-slate-100 rounded-full w-8;
+  }
+  .pagination-container li.next-page,
+  .pagination-container li.pre-page {
+    @apply h-8;
   }
   .pagination-container li img {
-    @apply h-4;
+    @apply h-4 mx-auto relative top-1;
   }
   /* 列表 */
   .table-container {
@@ -109,7 +116,7 @@
     @apply mt-2 overflow-ellipsis whitespace-nowrap overflow-hidden;
   }
   .card-mode .grid li {
-    @apply text-center border border-solid border-slate-200 px-4 pt-4 pb-6 relative;
+    @apply text-center border border-solid border-slate-200 px-4 pt-4 pb-6 relative hover:shadow-lg duration-300 transition-all cursor-pointer;
   }
   .card-mode svg {
     @apply w-4 fill-red-600 absolute cursor-pointer hover:animate-bounce ease-in delay-1000 transition-all;
