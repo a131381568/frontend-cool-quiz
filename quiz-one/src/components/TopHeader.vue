@@ -1,5 +1,5 @@
 <template lang="pug">
-header.bg-black.text-white.flex.justify-between.px-4.py-2
+header.bg-slate-800.text-white.flex.justify-between.px-4.py-2
   div.user-name 您好，Allen
   button.btn 登出
 </template>

@@ -5,5 +5,7 @@ div
   router-link(to="/connections") connections
 </template>
 <script setup lang="ts">
-// const route = useRoute();
+const store = useStore();
+// store.registerMember();
+store.downloadMemberList();
 </script>

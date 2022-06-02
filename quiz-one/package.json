@@ -10,6 +10,8 @@
   "dependencies": {
     "@vueuse/head": "^0.7.5",
     "axios": "^0.25.0",
+    "firebase": "^9.8.2",
+    "firestore": "^1.1.6",
     "pinia": "~2.0",
     "vue": "~3.2",
     "vue-router": "~4.0"

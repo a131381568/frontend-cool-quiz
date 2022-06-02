@@ -28,6 +28,18 @@
   .user-content {
     @apply w-1of4 p-10 bg-slate-300 relative;
   }
+  .user-content .logo {
+    @apply mx-auto rounded-full border mb-6;
+  }
+  .user-content .user-info-item {
+    @apply flex justify-start mb-2;
+  }
+  .user-content .user-info-item img {
+    @apply w-6;
+  }
+  .user-content .user-info-item span {
+    @apply whitespace-nowrap ml-4;
+  }
   .close-btn {
     @apply top-4 right-4 absolute w-6 h-6;
   }
@@ -50,7 +62,7 @@
   .facorite-btn-group [action-type="false"] {
     @apply opacity-50;
   }
-  .register-btn {
+  .view-all-btn {
     @apply border-r border-solid border-slate-300 pr-3 mr-3;
   }
   .connections-header .toggle-btn-group {
@@ -127,5 +139,15 @@
   }
   .card-mode svg.is-collect-icon {
     @apply right-2 bottom-2;
+  }
+  /* 登入 */
+  .login-btn {
+    @apply text-white text-center bg-slate-500 py-1 px-6 font-bold;
+  }
+  .register-btn {
+    @apply bg-teal-100 text-center py-1 px-6 font-bold;
+  }
+  .login-form-btn-group {
+    @apply grid grid-cols-2 gap-4;
   }
 }

@@ -5,8 +5,10 @@ import {
   userListType,
   pageReqInfoType,
 } from "@/type/types";
-
 import { defineStore } from "pinia";
+import { db } from "@/utils/firebase";
+import { addDoc, getFirestore, collection, getDocs } from "firebase/firestore";
+const memberCollection = String(import.meta.env.VITE_APP_FIREBASE_COLLECTION);
 
 export const useStore = defineStore("main", {
   state: () => ({
@@ -94,6 +96,7 @@ export const useStore = defineStore("main", {
       this.lightBoxState = false;
     },
     async downLoadTotalUserList() {
+      db;
       let userListRes: singleUserType[] = [];
       let pageReqInfo: pageReqInfoType = {
         page: 0,
@@ -170,11 +173,27 @@ export const useStore = defineStore("main", {
       this.connectionsCount = 30;
       this.connectionsPage = 1;
     },
+    async downloadMemberList() {
+      const citiesCol = collection(db, memberCollection);
+      const citySnapshot = await getDocs(citiesCol);
+      const cityList = citySnapshot.docs.map((doc) => doc.data());
+      console.log(cityList);
+      return cityList;
+    },
+    async registerMember() {
+      try {
+        const docRef = await addDoc(collection(db, memberCollection), {
+          first: "Ada",
+          last: "Lovelace",
+          born: 1815,
+        });
+        console.log("已存入此id", docRef.id);
+      } catch (e) {
+        console.error("Error adding document: ", e);
+      }
+    },
   },
   getters: {
-    isReady: (state) => {
-      return !state.isInitialized;
-    },
     get_connectionsList: (state) => {
       return state.connectionsList;
     },
@@ -202,7 +221,9 @@ export const useStore = defineStore("main", {
     get_calTotalPagi: (state) => {
       // this.connectionsPage 現在在第幾頁
       const actionPai = state.connectionsPage;
-      const calTotalPagi = state.getTotalPagi;
+      const totalLength = state.connectionsLength;
+      const viewCount = state.connectionsCount;
+      const calTotalPagi = Math.ceil(totalLength / viewCount);
       console.log(`
       actionPai:      ${actionPai}
       calTotalPagi:   ${calTotalPagi}

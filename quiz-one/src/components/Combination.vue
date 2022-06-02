@@ -4,7 +4,7 @@ div.connections-page
     div.connections-content
         div.connections-header
             div.facorite-btn-group
-                router-link.register-btn(to="/connections" v-show="modeState" :action-type="!isFacoritePage") 全部
+                router-link.view-all-btn(to="/connections" v-show="modeState" :action-type="!isFacoritePage") 全部
                 router-link.facorite-btn(to="/facorite" v-show="modeState" :action-type="isFacoritePage" ) 已收藏
             div.toggle-btn-group
                 select(v-model="store.connectionsCount")
