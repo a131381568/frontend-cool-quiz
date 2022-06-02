@@ -1,0 +1,124 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body,
+  html {
+    width: 100%;
+    height: 100%;
+    margin: 0 auto;
+    padding: 0;
+    overflow: hidden;
+  }
+  #app {
+    overflow-y: scroll;
+  }
+  #app,
+  .app-inner {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  /* 燈箱 */
+  .lighbox-container.lighbox-container {
+    @apply fixed w-screen h-screen bg-opacity-80 bg-black  top-0 left-0 overflow-hidden flex flex-row items-center justify-center;
+    z-index: 1055;
+  }
+  .user-content {
+    @apply w-1of4 p-10 bg-slate-300 relative;
+  }
+  .close-btn {
+    @apply top-4 right-4 absolute w-6 h-6;
+  }
+  /* 人脈頁面 */
+  .connections-page {
+    @apply flex justify-center py-8;
+  }
+  .connections-content {
+    @apply w-7of12;
+  }
+  .connections-header {
+    @apply flex justify-between pb-8;
+  }
+  .facorite-btn-group a {
+    @apply font-semibold;
+  }
+  .facorite-btn-group [action-type="false"] {
+    @apply opacity-50;
+  }
+  .register-btn {
+    @apply border-r border-solid border-slate-300 pr-3 mr-3;
+  }
+  .connections-header .toggle-btn-group {
+    @apply flex items-center;
+  }
+  .connections-header .toggle-btn-group select {
+    @apply border border-solid border-slate-200 text-tiny pr-8 py-1 mr-1;
+  }
+  .connections-header .toggle-btn-group select:focus {
+    box-shadow: none;
+    /* @apply border-0; */
+  }
+  .connections-header .toggle-btn-group button {
+    @apply w-9 h-9 hover:opacity-50;
+  }
+  .connections-header .toggle-grid-btn img {
+    width: 1.7rem;
+    @apply mx-auto;
+  }
+  .connections-header .toggle-list-btn img {
+    @apply w-7 mx-auto;
+  }
+  /* 分頁 */
+  .pre-page[data-action="false"],
+  .next-page[data-action="false"] {
+    @apply opacity-20 pointer-events-none;
+  }
+  .pagination-container {
+    @apply flex justify-center items-center my-12;
+  }
+  .pagination-container li {
+    @apply inline-block align-middle mx-1 p-1 w-8 text-center cursor-pointer;
+  }
+  .pagination-container li[action-pagi="true"] {
+    @apply bg-slate-100 rounded-full;
+  }
+  .pagination-container li img {
+    @apply h-4;
+  }
+  /* 列表 */
+  .table-container {
+    @apply text-left flex justify-center overflow-x-auto;
+  }
+  .table-container table {
+    @apply border-t border-r border-l w-full;
+  }
+  .table-container table th {
+    @apply w-1of3 bg-gray-900 text-white;
+  }
+  .table-container table td,
+  .table-container table th {
+    @apply whitespace-nowrap border-b p-1;
+  }
+  /* 格狀 */
+  .card-mode .grid li img {
+    @apply mx-auto border border-solid border-slate-100;
+  }
+  .card-mode .grid li h6 {
+    @apply mt-2 overflow-ellipsis whitespace-nowrap overflow-hidden;
+  }
+  .card-mode .grid li {
+    @apply text-center border border-solid border-slate-200 px-4 pt-4 pb-6 relative;
+  }
+  .card-mode svg {
+    @apply w-4 fill-red-600 absolute cursor-pointer hover:animate-bounce ease-in delay-1000 transition-all;
+  }
+  .card-mode svg.no-collect-icon {
+    width: 20px;
+    @apply right-1 bottom-1;
+  }
+  .card-mode svg.is-collect-icon {
+    @apply right-2 bottom-2;
+  }
+}
