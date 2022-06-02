@@ -1,19 +1,24 @@
-import { totalUserReq, topoListReq } from "@/api/user";
+import { totalUserReq } from "@/api/user";
 import {
   singleUserType,
   ResponseUserListType,
   userListType,
   pageReqInfoType,
   singleMemberInfo,
+  singleUser,
 } from "@/type/types";
 import { defineStore } from "pinia";
 import { db } from "@/utils/firebase";
 import {
   addDoc,
   getFirestore,
-  collection,
   getDocs,
   runTransaction,
+  updateDoc,
+  collection,
+  doc,
+  setDoc,
+  getDoc,
 } from "firebase/firestore";
 import bcrypt from "bcryptjs";
 import codeStateMaster from "@/config/member-code";
@@ -23,7 +28,7 @@ const saltRounds = Number(import.meta.env.VITE_APP_SALTROUNDS);
 
 export const useStore = defineStore("main", {
   state: () => ({
-    debug: import.meta.env.MODE === "development",
+    initTime: 0,
     connectionsCount: 30,
     connectionsPage: 1,
     connectionsLength: 0,
@@ -32,7 +37,7 @@ export const useStore = defineStore("main", {
     oriConnectionsLength: 0,
     connectionsMode: "card",
     lightBoxState: false,
-    actionUserInfo: {
+    actionUserInfo: <singleUser>{
       gender: "",
       name: {
         title: "",
@@ -93,10 +98,13 @@ export const useStore = defineStore("main", {
     alertBoxMsg: "",
     loadingState: false,
     userSelfName: "",
+    userSelfMail: "",
   }),
   actions: {
     changeConnectionsMode(mode: string) {
       this.connectionsMode = mode;
+      // 儲存資料
+      this.saveStoreDataInCache();
     },
     showLightBox(mail: string) {
       const array: singleUserType[] = this.connectionsList;
@@ -135,6 +143,8 @@ export const useStore = defineStore("main", {
     },
     changePage(pagi: number) {
       this.connectionsPage = pagi;
+      // 儲存資料
+      this.saveStoreDataInCache();
     },
     collectUserActionPush(userData: singleUserType) {
       const oriList: singleUserType[] = this.connectionsList;
@@ -144,6 +154,10 @@ export const useStore = defineStore("main", {
         }
       });
       this.isCollectUserList.push(userData);
+      // 更新至資料庫
+      this.updateFireBaseMemberFacorite(this.isCollectUserList);
+      // 儲存資料
+      this.saveStoreDataInCache();
     },
     collectUserActionPull(email: string) {
       const oriList: singleUserType[] = this.connectionsList;
@@ -165,6 +179,10 @@ export const useStore = defineStore("main", {
         (item) => item.email !== email
       );
       this.isCollectUserList = newCollectUserList;
+      // 更新至資料庫
+      this.updateFireBaseMemberFacorite(newCollectUserList);
+      // 儲存資料
+      this.saveStoreDataInCache();
     },
     showCollectList() {
       this.oriConnectionsList = JSON.parse(
@@ -175,6 +193,8 @@ export const useStore = defineStore("main", {
       this.connectionsLength = this.isCollectUserList.length;
       this.connectionsCount = 30;
       this.connectionsPage = 1;
+      // 儲存資料
+      this.saveStoreDataInCache();
     },
     showConnectionsList() {
       const oriData = JSON.parse(JSON.stringify(this.oriConnectionsList));
@@ -197,19 +217,39 @@ export const useStore = defineStore("main", {
       if (isRepeat) {
         resCode = -1;
       } else {
-        // 進行註冊
+        // 先加密
         const hashedPassword = await bcrypt.hash(password, saltRounds);
-        const docRef = await addDoc(collection(db, memberCollection), {
+        // 再進行註冊
+        const memberRef = await collection(db, memberCollection);
+        await setDoc(doc(memberRef, email), {
           name: name,
           mail: email,
           password: hashedPassword,
           facorite: [],
         });
-        if (docRef.id) {
+        // 檢索新增
+        const docRef = await doc(db, memberCollection, email);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          // 註冊成功
           resCode = 1;
+          console.log("Document data:", docSnap.data());
         } else {
+          // 不明原因錯誤
           resCode = -2;
+          console.log("No such document!");
         }
+        // const docRef = await addDoc(collection(db, memberCollection), {
+        //   name: name,
+        //   mail: email,
+        //   password: hashedPassword,
+        //   facorite: [],
+        // });
+        // if (docRef.id) {
+        //   resCode = 1;
+        // } else {
+        //   resCode = -2;
+        // }
       }
       const resMsg = await codeStateMaster.transformMemberMsg(
         "registerMember",
@@ -224,7 +264,7 @@ export const useStore = defineStore("main", {
       let resCode = 0;
       // 先檢查信箱是否有這個人
       const memberList = await this.downloadMemberList();
-      // let hasMember:singleMemberInfo[] = []
+      // let hasMember: singleMemberInfo[] = [];
       const hasMember = await memberList.filter((item) => item.mail === email);
       if (hasMember.length > 0) {
         // 檢查密碼
@@ -240,7 +280,10 @@ export const useStore = defineStore("main", {
           resCode = 1;
           // 載入個人資料
           this.userSelfName = hasMember[0].name;
+          this.userSelfMail = hasMember[0].mail;
           this.isCollectUserList = hasMember[0].facorite;
+          // 儲存資料
+          this.saveStoreDataInCache();
         }
       } else if (hasMember.length === 0) {
         // 無此帳號
@@ -276,22 +319,165 @@ export const useStore = defineStore("main", {
     setUserSelfInfo(name: string) {
       this.userSelfName = name;
     },
-    async addFireBaseMemberFacorite() {
-      try {
-        await runTransaction(db, async (transaction) => {
-          const sfDocRef = "EsiNgsnPuZumfUXCpeaC";
+    async updateFireBaseMemberFacorite(newFacoriteArray: singleUser[]) {
+      const washingtonRef = doc(db, memberCollection, this.get_userSelfMail);
+      await updateDoc(washingtonRef, {
+        facorite: newFacoriteArray,
+      });
+    },
+    // 儲存資料
+    saveStoreDataInCache() {
+      const initTime: number = this.initTime;
+      const connectionsCount: number = this.connectionsCount;
+      const connectionsPage: number = this.connectionsPage;
+      const connectionsLength: number = this.connectionsLength;
+      const connectionsList: singleUserType[] = this.connectionsList;
+      const oriConnectionsList: singleUserType[] = this.oriConnectionsList;
+      const oriConnectionsLength: number = this.oriConnectionsLength;
+      const connectionsMode: string = this.connectionsMode;
+      const lightBoxState: boolean = this.lightBoxState;
+      const actionUserInfo: singleUser = this.actionUserInfo;
+      const isCollectUserList: singleUserType[] = this.isCollectUserList;
+      const alertBoxState: boolean = this.alertBoxState;
+      const alertBoxMsg: string = this.alertBoxMsg;
+      const loadingState: boolean = this.loadingState;
+      const userSelfName: string = this.userSelfName;
+      const userSelfMail: string = this.userSelfMail;
 
-          const sfDoc = await transaction.get(sfDocRef);
-          if (!sfDoc.exists()) {
-            throw "Document does not exist!";
-          }
-
-          const newPopulation = sfDoc.data().name + 1;
-          transaction.update(sfDocRef, { name: newPopulation });
-        });
-        console.log("Transaction successfully committed!");
-      } catch (e) {
-        console.log("Transaction failed: ", e);
+      const fccoCache = {
+        connectionsCount,
+        connectionsPage,
+        connectionsLength,
+        connectionsList,
+        oriConnectionsList,
+        oriConnectionsLength,
+        connectionsMode,
+        lightBoxState,
+        actionUserInfo,
+        isCollectUserList,
+        alertBoxState,
+        alertBoxMsg,
+        loadingState,
+        userSelfName,
+        userSelfMail,
+      };
+      const storeCacheStr = localStorage.getItem("fcco-cache");
+      if (storeCacheStr) {
+        const storeCacheObj = JSON.parse(storeCacheStr);
+        const localInitTime = storeCacheObj.initTime;
+        // 存以前先比對 localInitTime 的 initTime
+        if (localInitTime > initTime) {
+          // 不儲存，跳出警示燈箱後初始化。
+          this.showAlertBox(
+            "不同頁籤的時差行為，導致儲存資料不同步，請關閉其它頁面後繼續作業。"
+          );
+          this.initStoreDataByCache();
+        } else {
+          // 確定是最新開的視窗就儲存
+          localStorage.setItem("fcco-cache", JSON.stringify(fccoCache));
+        }
+      }
+    },
+    initStoreDataByCache() {
+      this.initTime = new Date().getTime();
+      // console.log("initStoreDataByCache: ", this.initTime);
+      const storeCacheStr = localStorage.getItem("fcco-cache");
+      if (storeCacheStr) {
+        const storeCacheObj = JSON.parse(storeCacheStr);
+        this.connectionsCount = storeCacheObj.connectionsCount;
+        this.connectionsPage = storeCacheObj.connectionsPage;
+        this.connectionsLength = storeCacheObj.connectionsLength;
+        this.connectionsList = storeCacheObj.connectionsList;
+        this.oriConnectionsList = storeCacheObj.oriConnectionsList;
+        this.oriConnectionsLength = storeCacheObj.oriConnectionsLength;
+        this.connectionsMode = storeCacheObj.connectionsMode;
+        // this.lightBoxState = storeCacheObj.lightBoxState;
+        this.actionUserInfo = storeCacheObj.actionUserInfo;
+        this.isCollectUserList = storeCacheObj.isCollectUserList;
+        // this.alertBoxState = storeCacheObj.alertBoxState;
+        // this.alertBoxMsg = storeCacheObj.alertBoxMsg;
+        // this.loadingState = storeCacheObj.loadingState;
+        this.userSelfName = storeCacheObj.userSelfName;
+        this.userSelfMail = storeCacheObj.userSelfMail;
+      } else {
+        // 如果 cache 為空就設置預設值
+        const defaultStoreCacheStr = {
+          initTime: this.initTime,
+          connectionsCount: 30,
+          connectionsPage: 1,
+          connectionsLength: 0,
+          connectionsList: [],
+          oriConnectionsList: [],
+          oriConnectionsLength: 0,
+          connectionsMode: "card",
+          lightBoxState: false,
+          actionUserInfo: {
+            gender: "",
+            name: {
+              title: "",
+              first: "",
+              last: "",
+            },
+            location: {
+              street: {
+                number: 0,
+                name: "",
+              },
+              city: "",
+              state: "",
+              country: "",
+              postcode: 0,
+              coordinates: {
+                latitude: "",
+                longitude: "",
+              },
+              timezone: {
+                offset: "",
+                description: "",
+              },
+            },
+            email: "",
+            login: {
+              uuid: "",
+              username: "",
+              password: "",
+              salt: "",
+              md5: "",
+              sha1: "",
+              sha256: "",
+            },
+            dob: {
+              date: "",
+              age: 0,
+            },
+            registered: {
+              date: "",
+              age: 0,
+            },
+            phone: "",
+            cell: "",
+            id: {
+              name: "",
+              value: null,
+            },
+            picture: {
+              large: "",
+              medium: "",
+              thumbnail: "",
+            },
+            nat: "",
+          },
+          isCollectUserList: [],
+          alertBoxState: false,
+          alertBoxMsg: "",
+          loadingState: false,
+          userSelfName: "",
+          userSelfMail: "",
+        };
+        localStorage.setItem(
+          "fcco-cache",
+          JSON.stringify(defaultStoreCacheStr)
+        );
       }
     },
   },
@@ -385,6 +571,9 @@ export const useStore = defineStore("main", {
     },
     get_userSelfName: (state) => {
       return state.userSelfName;
+    },
+    get_userSelfMail: (state) => {
+      return state.userSelfMail;
     },
   },
 });
