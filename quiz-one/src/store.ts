@@ -22,6 +22,7 @@ import {
 } from "firebase/firestore";
 import bcrypt from "bcryptjs";
 import codeStateMaster from "@/config/member-code";
+import router from "./router";
 
 const memberCollection = String(import.meta.env.VITE_APP_FIREBASE_COLLECTION);
 const saltRounds = Number(import.meta.env.VITE_APP_SALTROUNDS);
@@ -130,9 +131,7 @@ export const useStore = defineStore("main", {
       // console.log(userData);
       if (userData.results) {
         userListRes = userData.results;
-        userListRes.forEach((item) => {
-          item.collect = false;
-        });
+        userListRes.forEach((item) => item.collect === false);
         this.connectionsList = userListRes;
       }
       if (userData.info) {
@@ -184,7 +183,11 @@ export const useStore = defineStore("main", {
       // 儲存資料
       this.saveStoreDataInCache();
     },
+    // 顯示已收藏 Grid
     showCollectList() {
+      // console.log("顯示已收藏 Grid");
+      // 依情境選擇 oriList 的資料
+      // 如果是正常操作
       this.oriConnectionsList = JSON.parse(
         JSON.stringify(this.connectionsList)
       );
@@ -194,9 +197,11 @@ export const useStore = defineStore("main", {
       this.connectionsCount = 30;
       this.connectionsPage = 1;
       // 儲存資料
-      this.saveStoreDataInCache();
+      // this.saveStoreDataInCache();
     },
+    // 顯示全部 Grid
     showConnectionsList() {
+      // console.log("顯示全部 Grid");
       const oriData = JSON.parse(JSON.stringify(this.oriConnectionsList));
       this.connectionsList = oriData;
       this.connectionsLength = this.oriConnectionsLength;
@@ -282,8 +287,12 @@ export const useStore = defineStore("main", {
           this.userSelfName = hasMember[0].name;
           this.userSelfMail = hasMember[0].mail;
           this.isCollectUserList = hasMember[0].facorite;
+          // 載初次的全部資料
+          if (this.get_connectionsList.length === 0) {
+            await this.downLoadTotalUserList();
+          }
           // 儲存資料
-          this.saveStoreDataInCache();
+          await this.saveStoreDataInCache();
         }
       } else if (hasMember.length === 0) {
         // 無此帳號
@@ -332,6 +341,7 @@ export const useStore = defineStore("main", {
       const connectionsPage: number = this.connectionsPage;
       const connectionsLength: number = this.connectionsLength;
       const connectionsList: singleUserType[] = this.connectionsList;
+      // 要依據情境存?
       const oriConnectionsList: singleUserType[] = this.oriConnectionsList;
       const oriConnectionsLength: number = this.oriConnectionsLength;
       const connectionsMode: string = this.connectionsMode;
@@ -377,6 +387,7 @@ export const useStore = defineStore("main", {
           localStorage.setItem("fcco-cache", JSON.stringify(fccoCache));
         }
       }
+      console.log("已儲存資料至瀏覽器");
     },
     initStoreDataByCache() {
       this.initTime = new Date().getTime();
@@ -388,6 +399,7 @@ export const useStore = defineStore("main", {
         this.connectionsPage = storeCacheObj.connectionsPage;
         this.connectionsLength = storeCacheObj.connectionsLength;
         this.connectionsList = storeCacheObj.connectionsList;
+        // 依據情境取代?
         this.oriConnectionsList = storeCacheObj.oriConnectionsList;
         this.oriConnectionsLength = storeCacheObj.oriConnectionsLength;
         this.connectionsMode = storeCacheObj.connectionsMode;
@@ -479,6 +491,20 @@ export const useStore = defineStore("main", {
           JSON.stringify(defaultStoreCacheStr)
         );
       }
+    },
+    logOut() {
+      localStorage.removeItem("fcco-cache");
+      this.connectionsCount = 30;
+      this.connectionsPage = 1;
+      this.connectionsLength = 0;
+      this.connectionsList = [];
+      this.oriConnectionsList = [];
+      this.oriConnectionsLength = 0;
+      this.connectionsMode = "card";
+      this.isCollectUserList = [];
+      this.userSelfName = "";
+      this.userSelfMail = "";
+      router.push("/login");
     },
   },
   getters: {

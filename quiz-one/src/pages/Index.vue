@@ -2,7 +2,16 @@
 h1 Hello World
 div
   p I'm a cool Vite project!
-  router-link(to="/connections") connections
+  ul
+    li
+      router-link(to="/connections") connections
+    li
+      router-link(to="/login") login
+    li
+      router-link(to="/register") register
+    li
+      router-link(to="/facorite") facorite
+
 </template>
 <script setup lang="ts">
 const store = useStore();
