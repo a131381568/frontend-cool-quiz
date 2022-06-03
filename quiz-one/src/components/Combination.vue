@@ -26,19 +26,19 @@ const modeState = computed(() => store.get_connectionsMode === "card");
 const isFacoritePage = computed(() => route.name === "Facorite");
 // store.connectionsCount = 30;
 // store.connectionsPage = 1;
-console.log(`
-modeState is Card:        ${modeState.value}
-connectionsCount: ${store.connectionsCount}
-connectionsPage:  ${store.connectionsPage}
-`);
+// console.log(`
+// modeState is Card:        ${modeState.value}
+// connectionsCount: ${store.connectionsCount}
+// connectionsPage:  ${store.connectionsPage}
+// `);
 if (isFacoritePage.value) {
-  console.log("頁面-收藏頁面狀態");
+  // console.log("頁面-收藏頁面狀態");
   store.showCollectList();
 } else if (store.oriConnectionsList.length > 0) {
-  console.log("頁面-顯示全部 grid");
+  // console.log("頁面-顯示全部 grid");
   store.showConnectionsList();
 } else {
-  console.log("都不是");
+  // console.log("都不是");
 }
 
 watch(

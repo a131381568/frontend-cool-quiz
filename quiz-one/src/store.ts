@@ -238,7 +238,7 @@ export const useStore = defineStore("main", {
         if (docSnap.exists()) {
           // 註冊成功
           resCode = 1;
-          console.log("Document data:", docSnap.data());
+          // console.log("Document data:", docSnap.data());
         } else {
           // 不明原因錯誤
           resCode = -2;
@@ -355,6 +355,7 @@ export const useStore = defineStore("main", {
       const userSelfMail: string = this.userSelfMail;
 
       const fccoCache = {
+        initTime,
         connectionsCount,
         connectionsPage,
         connectionsLength,
@@ -376,18 +377,24 @@ export const useStore = defineStore("main", {
         const storeCacheObj = JSON.parse(storeCacheStr);
         const localInitTime = storeCacheObj.initTime;
         // 存以前先比對 localInitTime 的 initTime
+        // console.log(`
+        //   localInitTime:  ${localInitTime}
+        //   initTime:       ${initTime}
+        // `);
         if (localInitTime > initTime) {
           // 不儲存，跳出警示燈箱後初始化。
+          // console.log("不儲存，跳出警示燈箱後初始化");
           this.showAlertBox(
             "不同頁籤的時差行為，導致儲存資料不同步，請關閉其它頁面後繼續作業。"
           );
           this.initStoreDataByCache();
         } else {
           // 確定是最新開的視窗就儲存
+          // console.log("確定是最新開的視窗就儲存");
           localStorage.setItem("fcco-cache", JSON.stringify(fccoCache));
         }
       }
-      console.log("已儲存資料至瀏覽器");
+      // console.log("已儲存資料至瀏覽器");
     },
     initStoreDataByCache() {
       this.initTime = new Date().getTime();
