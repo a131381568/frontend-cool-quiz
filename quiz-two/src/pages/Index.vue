@@ -4,11 +4,9 @@ div.page-header
 div.container
   //- TreeCompEdit.left-col(:treeData="store.mainData")
   div.left-col
-    EnterCom(:treeData="value" v-for="value in store.mainData.children")
+    //- EnterCom(:treeData="value" v-for="value in store.mainData.children")
     <hr>
-    input(type="text" value="aaa.bbb.ccc")
-    <hr>
-    input(type="text" value="aaa.ddd.eee")
+    SecDimensioInput(:textSplit="pair" v-for="pair in store.secDimensionList")
   TreeCompView.right-col(:treeData="store.get_floorOneTree")
 div
   ul

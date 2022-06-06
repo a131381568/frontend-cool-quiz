@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { isBuffer } from "util";
 // import router from "./router";
 
 export const useStore = defineStore("main", {
@@ -12,45 +13,22 @@ export const useStore = defineStore("main", {
       children: [],
     },
     ///////
-    nodes: {
-      aaa: {
-        nid: "",
-        id: "aaa",
-        parentId: "",
-        text: "I am aaa",
+    nodes: {},
+    childrenOf: {},
+    secDimensionList: [
+      {
+        pairKey: "aaa.bbb.ccc",
+        pairVal: "aaaaaaaaaaaaaaaaa",
       },
-      bbb: {
-        nid: "nidnidb",
-        id: "bbb",
-        parentId: "aaa",
-        text: "I am bbb",
+      {
+        pairKey: "aaa.ddd.eee",
+        pairVal: "bbbbbbbbbbbbbbbbbb",
       },
-      ccc: {
-        nid: "",
-        id: "ccc",
-        parentId: "bbb",
-        text: "I am ccc",
+      {
+        pairKey: "fff.ggg.hhh.iii.jjj.kkk.lll",
+        pairVal: "cccccccc",
       },
-      ddd: {
-        nid: "",
-        id: "ddd",
-        parentId: "aaa",
-        text: "I am ddd",
-      },
-      eee: {
-        nid: "",
-        id: "eee",
-        parentId: "ddd",
-        text: "I am eee",
-      },
-    },
-    childrenOf: {
-      aaa: ["bbb", "ddd"],
-      bbb: ["ccc"],
-      ccc: [],
-      ddd: ["eee"],
-      eee: [],
-    },
+    ],
   }),
   actions: {
     setTime() {
@@ -192,6 +170,40 @@ export const useStore = defineStore("main", {
         },
       ];
     },
+    changeSecDimension(nodeList: string[]) {
+      // if (nodeList.length > 0) {
+      //   firstKey = nodeList[0];
+      //   // 如果 store 包含此 node
+      //   console.log(this.nodes.hasOwnProperty(firstKey));
+      // }
+
+      // 組合二維陣列
+      nodeList.reduce((prev, currVal, currIndex) => {
+        // 全部節點
+        this.nodes[`${currVal}`] = {
+          nid: "",
+          id: currVal,
+          parentId: prev,
+          text: "I am " + currVal,
+          children: [],
+        };
+
+        // 父階層
+        if (!this.childrenOf.hasOwnProperty(currVal)) {
+          this.childrenOf[`${currVal}`] = [];
+        }
+        if (prev) {
+          if (this.childrenOf.hasOwnProperty(prev)) {
+            this.childrenOf[`${prev}`].push(currVal);
+          } else {
+            this.childrenOf[`${prev}`] = [];
+            this.childrenOf[`${prev}`].push(currVal);
+          }
+        }
+
+        return currVal;
+      }, "");
+    },
   },
   getters: {
     get_initTime: (state) => {
@@ -201,71 +213,155 @@ export const useStore = defineStore("main", {
       return state.mainData.children.length;
     },
     get_floorOneTree: (state) => {
-      const childrenOf = state.childrenOf;
       const nodeArray = Object.values(state.nodes);
-      // const nodeKeys = Object.keys(state.nodes);
-      const parentKeys = Object.keys(childrenOf);
-      let parentKeysTop = [];
-
-      // 子陣列
-      const parentArray = Object.values(childrenOf).filter((item, index) => {
-        if (item.length > 0) {
-          parentKeysTop = parentKeysTop.concat(
-            nodeArray.filter((item) => item.id === parentKeys[index])
-          );
-          return item;
-        }
-      });
+      const nodeKeys = Object.keys(state.nodes);
+      const parentKeys = Object.keys(state.childrenOf);
+      const parentValues = Object.values(state.childrenOf);
 
       // 父陣列
-      const setParentMap = parentArray.map((item, index) => {
+      const setParentMap = parentValues.map((item, index) => {
+        const nodeInfo = nodeArray.filter(
+          (node) => node.id === parentKeys[index]
+        );
+        const childrenInfo = item.map((chInfo) => {
+          const actionNodeKeys = nodeKeys.indexOf(chInfo);
+          return nodeArray[actionNodeKeys];
+        });
         const newItem = {
           nid: "",
-          id: parentKeysTop[index].id, // parentKeysTop[index],
-          parentId: parentKeysTop[index].parentId,
-          text: parentKeysTop[index].text,
-          children: [],
+          id: parentKeys[index],
+          parentId: nodeInfo.length > 0 ? nodeInfo[0].parentId : "",
+          text: "", // parentKeys[index].text
+          children: childrenInfo,
         };
-        const cildrenArray = nodeArray.filter((fel) => {
-          return item.indexOf(fel.id) >= 0;
-        });
-        newItem.children = cildrenArray;
         return newItem;
       });
 
-      // 檢查是否還有 parentId 未歸類
-      setParentMap.reduce((prev, currVal, currIndex, array) => {
-        const concatArray = prev.concat(currVal);
-        const concatIdArray = concatArray.map((item) => item.id);
-
-        if (currVal.parentId.length > 0) {
-          const searchParentOrder = concatIdArray.indexOf(currVal.parentId);
-          const searchItemOrder = concatIdArray.indexOf(currVal.id);
-          // 減 1 ?
-          concatArray[searchParentOrder].children[searchItemOrder - 1] =
-            currVal;
-          console.log(
-            "childrenOrder..: ",
-            concatArray[searchParentOrder].children
+      // 父層巢狀收縮
+      const getId = (mainData, n) => {
+        if (mainData.children && Array.isArray(mainData.children)) {
+          // console.log(mainData.children);
+          mainData.children.reduce((prev, currVal, currIndex, array) => {
+            const concatIdArray = array.map((item) => item.id);
+            const childrenArray = currVal.children.map((parenScInfo) => {
+              const actionNodeKeys = concatIdArray.indexOf(parenScInfo.id);
+              return array[actionNodeKeys];
+            });
+            currVal.children = childrenArray;
+            // 重複
+            // if (!currVal.parentId && currVal.children.length > 0) {
+            //   getId(mainData.children);
+            // }
+            // console.log("prev: ", prev, "currVal: ", currVal);
+            return currVal;
+          }, []);
+          const filterMainData = mainData.children.filter(
+            (item) => !item.parentId
           );
-          console.log("searchParentOrder: ", searchParentOrder);
-          console.log("searchItemOrder: ", searchItemOrder);
-          console.log("currVal: ", currVal.id);
+          return filterMainData;
         }
-        return concatArray;
-      }, []);
+      };
 
-      const remainderArray = setParentMap.filter((item) => !item.parentId);
-
-      // 最後設置
       const mainData = {
         nid: "",
         id: "root",
         parentId: "",
         text: "",
-        children: remainderArray,
+        children: setParentMap,
       };
-      return mainData;
+
+      // 最後設置
+      const settingMainData = {
+        nid: "",
+        id: "root",
+        parentId: "",
+        text: "",
+        children: getId(mainData),
+      };
+
+      return settingMainData;
     },
+    // bak_get_floorOneTree: (state) => {
+    //   const childrenOf = state.childrenOf;
+    //   const nodeArray = Object.values(state.nodes);
+    //   // const nodeKeys = Object.keys(state.nodes);
+    //   const parentKeys = Object.keys(childrenOf);
+    //   let parentKeysTop = [];
+
+    //   // 子陣列
+    //   const parentArray = Object.values(childrenOf).filter((item, index) => {
+    //     if (item.length > 0) {
+    //       parentKeysTop = parentKeysTop.concat(
+    //         nodeArray.filter((item) => item.id === parentKeys[index])
+    //       );
+    //       return item;
+    //     }
+    //   });
+
+    //   console.log("parentArray: ", parentArray);
+
+    //   // 父陣列
+    //   const setParentMap = parentArray.map((item, index) => {
+    //     console.log(item);
+
+    //     const newItem = {
+    //       nid: "",
+    //       id: parentKeysTop[index].id, // parentKeysTop[index],
+    //       parentId: parentKeysTop[index].parentId,
+    //       text: parentKeysTop[index].text,
+    //       children: [],
+    //     };
+    //     const cildrenArray = nodeArray.filter((fel) => {
+    //       return item.indexOf(fel.id) >= 0;
+    //     });
+    //     newItem.children = cildrenArray;
+    //     return newItem;
+    //   });
+
+    //   const getId = (xxxx, n) => {
+    //     if (xxxx.children) {
+    //       const floor = n + 1;
+    //       console.log("floor: ", floor);
+    //       xxxx.children.forEach((el, index) => {
+    //         console.log(`
+    //         id:   ${el.id}
+    //         el:   ${index}
+    //         `);
+    //         if (xxxx.children[index]) {
+    //           getId(xxxx.children[index], floor);
+    //         }
+    //       });
+    //     }
+    //   };
+
+    //   // 檢查是否還有 parentId 未歸類
+    //   setParentMap.reduce((prev, currVal, currIndex, array) => {
+    //     const concatArray = prev.concat(currVal);
+    //     const concatIdArray = concatArray.map((item) => item.id);
+
+    //     getId(currVal, 0);
+
+    //     if (currVal.parentId.length > 0) {
+    //       // const searchParentOrder = concatIdArray.indexOf(currVal.parentId);
+    //       // const searchItemOrder = concatIdArray.indexOf(currVal.id);
+    //       // 減 1 ?
+    //       // concatArray[searchParentOrder].children[searchItemOrder] = currVal;
+    //     }
+    //     return concatArray;
+    //   }, []);
+
+    //   // const remainderArray = setParentMap.filter((item) => !item.parentId);
+
+    //   // 最後設置
+    //   const mainData = {
+    //     nid: "",
+    //     id: "root",
+    //     parentId: "",
+    //     text: "",
+    //     children: setParentMap,
+    //   };
+
+    //   return mainData;
+    // },
   },
 });
