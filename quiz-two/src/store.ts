@@ -193,50 +193,64 @@ export const useStore = defineStore("main", {
     //   ];
     // },
     changeSecDimension(nodeList: string[]) {
-      // if (nodeList.length > 0) {
-      //   firstKey = nodeList[0];
-      //   // 如果 store 包含此 node
-      //   console.log(this.nodes.hasOwnProperty(firstKey));
-      // }
-
-      // // 清空
-      // this.nodes = {};
-      // this.childrenOf = {};
+      const nodeArray = Object.values(this.nodes);
+      const nodeArrayByOriId = nodeArray.map((item) => item.id);
+      const parentKeys = Object.keys(this.childrenOf);
+      const parentValues = Object.values(this.childrenOf);
+      console.log("當下全部 nodeId: ", nodeArrayByOriId);
+      // console.log("parentKeys: ", parentKeys);
+      // console.log("parentValues: ", parentValues);
 
       // 組合二維陣列
       nodeList.reduce((prev, currVal, currIndex) => {
+        const nid = "n-" + this.genNonDuplicateID(5);
+
+        // 先搜尋是否有重複的 nodeId
+        const repeatNodeId = nodeArrayByOriId.indexOf(currVal);
+
+        // 有重複就取得原 node 資訊
+        if (repeatNodeId >= 0) {
+          console.log("repeatNodeId: ", currVal);
+          const repeatNodeInfo = nodeArray[Number(repeatNodeId)];
+          const repeatNodeParentId = repeatNodeInfo.parentId;
+
+          console.log("repeatNodeParentId: ", repeatNodeParentId);
+        } else {
+          // 不重複
+          // this.childrenOf[`${prev}`].push(nid);
+          console.log("noRepeatNodeId: ", currVal);
+          // 如果 parentId 和 id 相同就覆蓋
+        }
         // 全部節點
-        this.nodes[`${currVal}`] = {
-          nid: "",
+        this.nodes[`${nid}`] = {
+          nid: nid,
           id: currVal,
           parentId: prev,
           text: "I am " + currVal,
           children: [],
         };
 
-        console.log("prev: ", prev);
-        console.log("currVal: ", currVal);
-
-        // 父階層
-        if (!Object.prototype.hasOwnProperty.call(this.childrenOf, currVal)) {
-          this.childrenOf[`${currVal}`] = [];
+        // 父階層, 先製作空陣列
+        if (!Object.prototype.hasOwnProperty.call(this.childrenOf, nid)) {
+          this.childrenOf[`${nid}`] = [];
         }
         if (prev) {
+          // 判斷是否有 key
           if (Object.prototype.hasOwnProperty.call(this.childrenOf, prev)) {
-            // 判斷有沒有重複值, 沒有重複才推上去
-            if (this.childrenOf[`${prev}`].indexOf(currVal) >= 0) {
-              console.log("沒有重覆");
+            if (repeatNodeId >= 0) {
+              // 重複
             } else {
-              console.log("有重覆");
-              this.childrenOf[`${prev}`].push(currVal);
+              // 不重複
             }
+            // 查詢 oriId 有沒有重複值, 沒有重複才推上去
+            this.childrenOf[`${prev}`].push(nid);
           } else {
+            console.log("其他: ", nid);
             this.childrenOf[`${prev}`] = [];
-            this.childrenOf[`${prev}`].push(currVal);
+            this.childrenOf[`${prev}`].push(nid);
           }
         }
-
-        return currVal;
+        return nid;
       }, "");
     },
   },
@@ -252,39 +266,45 @@ export const useStore = defineStore("main", {
       const nodeKeys = Object.keys(state.nodes);
       const parentKeys = Object.keys(state.childrenOf);
       const parentValues = Object.values(state.childrenOf);
-
+      // console.log("nodeArray: ", nodeArray);
+      // console.log("nodeKeys: ", nodeKeys);
+      // console.log("parentKeys: ", parentKeys);
+      // console.log("parentValues: ", parentValues);
       // 父陣列
       const setParentMap = parentValues.map((item, index) => {
         const nodeInfo = nodeArray.filter(
-          (node) => node.id === parentKeys[Number(index)]
+          (node) => node.nid === parentKeys[Number(index)]
         );
         const childrenInfo = item.map((chInfo: any) => {
           const actionNodeKeys: number = nodeKeys.indexOf(chInfo);
           return nodeArray[Number(actionNodeKeys)];
         });
         const newItem = {
-          nid: "",
-          id: parentKeys[Number(index)],
+          nid: parentKeys[Number(index)],
+          id: nodeInfo[0].id,
           parentId: nodeInfo.length > 0 ? nodeInfo[0].parentId : "",
           text: "", // parentKeys[index].text
           children: childrenInfo,
         };
+        // console.log("nodeInfo: ", nodeInfo);
+        // console.log("childrenInfo: ", childrenInfo);
+        // console.log("item: ", item);
+        // console.log("newItem: ", newItem);
         return newItem;
       });
 
       // 父層巢狀收縮
       const getId = (mainData: any) => {
         if (mainData.children && Array.isArray(mainData.children)) {
-          console.log(mainData.children);
+          // console.log(mainData.children);
           mainData.children.reduce(
             (prev: any, currVal: any, currIndex: number, array: any) => {
-              console.log(currVal);
-
-              const concatIdArray = array.map((item: any) => item.id);
+              // console.log(currVal);
+              const concatIdArray = array.map((item: any) => item.nid);
               const childrenArray = currVal.children.map((parenScInfo: any) => {
-                console.log("parenScInfo.id: ", parenScInfo.id);
+                // console.log("parenScInfo.id: ", parenScInfo.nid);
                 const actionNodeKeys: number = concatIdArray.indexOf(
-                  parenScInfo.id
+                  parenScInfo.nid
                 );
                 return array[Number(actionNodeKeys)];
               });
