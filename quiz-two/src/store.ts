@@ -17,22 +17,42 @@ export const useStore = defineStore("main", {
     childrenOf: {},
     secDimensionList: [
       {
-        pairKey: "aaa.bbb.ccc",
-        pairVal: "aaaaaaaaaaaaaaaaa",
+        pairKey: "a.bwdfwd.c.ddd",
+        pairVal: "aaaaaaaaaaaaaaaaaaaa",
       },
       {
-        pairKey: "aaa.ddd.eee",
+        pairKey: "a.b.c.vvssssssv",
         pairVal: "bbbbbbbbbbbbbbbbbb",
       },
       {
-        pairKey: "fff.ggg.hhh.iii.jjj.kkk.lll",
-        pairVal: "cccccccc",
+        pairKey: "a.b.c.vvv.iiidddi",
+        pairVal: "ccccccccccccccccccc",
       },
+      // {
+      //   pairKey: "aaa.bbb.ccc",
+      //   pairVal: "aaaaaaaaaaaaaaaaa",
+      // },
+      // {
+      //   pairKey: "aaa.ddd.eee",
+      //   pairVal: "bbbbbbbbbbbbbbbbbb",
+      // },
+      // {
+      //   pairKey: "fff.ggg.hhh.iii.jjj.kkk.lll",
+      //   pairVal: "cccccccc",
+      // },
     ],
   }),
   actions: {
     setTime() {
       this.initTime = new Date().getTime();
+    },
+    getArraySameResult(a1: string[], a2: string[]) {
+      let i = a1.length;
+      if (i !== a2.length) return false;
+      while (i--) {
+        if (a1[i] !== a2[i]) return false;
+      }
+      return true;
     },
     genNonDuplicateID(randomLength: number) {
       return Number(
@@ -72,7 +92,7 @@ export const useStore = defineStore("main", {
         splitArray[splitArray.length - 1].length > 0
       ) {
         // 先把 node 全部建立出來
-        const rootArray = [];
+        const rootArray: any = [];
         // console.log(splitArray);
         splitArray.reduce((prev, currVal, currIndex) => {
           // console.log("currIndex: ", currIndex);
@@ -89,9 +109,9 @@ export const useStore = defineStore("main", {
         }, "");
 
         // 再分階層
-        rootArray.forEach((item, index, array) => {
+        rootArray.forEach((item: any, index: number, array: any) => {
           if (item.parentId) {
-            array.forEach((oriVal, oriIndex) => {
+            array.forEach((oriVal: any, oriIndex: number) => {
               if (oriVal.nid === item.parentId) {
                 rootArray[oriIndex].children.push(item);
               }
@@ -101,7 +121,9 @@ export const useStore = defineStore("main", {
 
         // 判斷父層是否為 root 階層, 最後設置
         // 節點只有一個點
-        const newRootArray = rootArray.filter((fItemn) => !fItemn.parentId);
+        const newRootArray = rootArray.filter(
+          (fItemn: any) => !fItemn.parentId
+        );
         // console.log(newRootArray);
         // console.log(splitArray[0]);
 
@@ -177,6 +199,10 @@ export const useStore = defineStore("main", {
       //   console.log(this.nodes.hasOwnProperty(firstKey));
       // }
 
+      // // 清空
+      // this.nodes = {};
+      // this.childrenOf = {};
+
       // 組合二維陣列
       nodeList.reduce((prev, currVal, currIndex) => {
         // 全部節點
@@ -188,13 +214,22 @@ export const useStore = defineStore("main", {
           children: [],
         };
 
+        console.log("prev: ", prev);
+        console.log("currVal: ", currVal);
+
         // 父階層
         if (!this.childrenOf.hasOwnProperty(currVal)) {
           this.childrenOf[`${currVal}`] = [];
         }
         if (prev) {
           if (this.childrenOf.hasOwnProperty(prev)) {
-            this.childrenOf[`${prev}`].push(currVal);
+            // 判斷有沒有重複值, 沒有重複才推上去
+            if (this.childrenOf[`${prev}`].indexOf(currVal) >= 0) {
+              console.log("沒有重覆");
+            } else {
+              console.log("有重覆");
+              this.childrenOf[`${prev}`].push(currVal);
+            }
           } else {
             this.childrenOf[`${prev}`] = [];
             this.childrenOf[`${prev}`].push(currVal);
@@ -223,7 +258,7 @@ export const useStore = defineStore("main", {
         const nodeInfo = nodeArray.filter(
           (node) => node.id === parentKeys[index]
         );
-        const childrenInfo = item.map((chInfo) => {
+        const childrenInfo = item.map((chInfo: any) => {
           const actionNodeKeys = nodeKeys.indexOf(chInfo);
           return nodeArray[actionNodeKeys];
         });
@@ -238,25 +273,31 @@ export const useStore = defineStore("main", {
       });
 
       // 父層巢狀收縮
-      const getId = (mainData, n) => {
+      const getId = (mainData: any) => {
         if (mainData.children && Array.isArray(mainData.children)) {
-          // console.log(mainData.children);
-          mainData.children.reduce((prev, currVal, currIndex, array) => {
-            const concatIdArray = array.map((item) => item.id);
-            const childrenArray = currVal.children.map((parenScInfo) => {
-              const actionNodeKeys = concatIdArray.indexOf(parenScInfo.id);
-              return array[actionNodeKeys];
-            });
-            currVal.children = childrenArray;
-            // 重複
-            // if (!currVal.parentId && currVal.children.length > 0) {
-            //   getId(mainData.children);
-            // }
-            // console.log("prev: ", prev, "currVal: ", currVal);
-            return currVal;
-          }, []);
+          console.log(mainData.children);
+          mainData.children.reduce(
+            (prev: any, currVal: any, currIndex: number, array: any) => {
+              console.log(currVal);
+
+              const concatIdArray = array.map((item: any) => item.id);
+              const childrenArray = currVal.children.map((parenScInfo: any) => {
+                console.log("parenScInfo.id: ", parenScInfo.id);
+                const actionNodeKeys = concatIdArray.indexOf(parenScInfo.id);
+                return array[actionNodeKeys];
+              });
+              currVal.children = childrenArray;
+              // 重複
+              // if (!currVal.parentId && currVal.children.length > 0) {
+              //   getId(mainData.children);
+              // }
+              // console.log("prev: ", prev, "currVal: ", currVal);
+              return currVal;
+            },
+            []
+          );
           const filterMainData = mainData.children.filter(
-            (item) => !item.parentId
+            (item: any) => !item.parentId
           );
           return filterMainData;
         }

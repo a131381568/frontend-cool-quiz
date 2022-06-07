@@ -2,7 +2,7 @@
 div
   //- div.title {{ treeDataText }}
   //--  input( type="text" v-model="treeData.id")
-  input(type="text" v-model="treeData.text" v-show="treeData.id !== 'root-node'")
+  input(type="text" v-model="treeDataOri.text" v-show="treeDataOri.id !== 'root-node'")
   button close
   TreeCompEdit.tree-comp-edit(v-for="value in treeDataChild" :treeData="value")
 </template>
@@ -49,8 +49,19 @@ const treeDataChild: LooseObject = computed(() => {
 console.log("組件啟動??");
 const autoWatchAction = ref(0);
 
-const treeDataInnerText = computed(() => treeData.value.text);
-const treeDataInnerNid = computed(() => treeData.value.nid);
+const treeDataOri: LooseObject = computed(() => {
+  const data: LooseObject = treeData.value;
+  return data;
+});
+
+const treeDataInnerText: LooseObject = computed(() => {
+  const data: LooseObject = treeData.value;
+  return data.text;
+});
+const treeDataInnerNid: LooseObject = computed(() => {
+  const data: LooseObject = treeData.value;
+  return data.nid;
+});
 
 watchDebounced(
   treeDataInnerText,
@@ -60,7 +71,7 @@ watchDebounced(
     console.log("啟動了---setTree???");
     console.log(newVal, oldVal);
     console.log(newVal.toString() === oldVal.toString());
-    store.setTree(newVal, oldVal, treeDataInnerNid.value);
+    store.setTree(String(newVal), String(oldVal), treeDataInnerNid.value);
   },
   { debounce: 1500 }
 );
