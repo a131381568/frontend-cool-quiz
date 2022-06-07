@@ -16,30 +16,38 @@ export const useStore = defineStore("main", {
     nodes: <nodeUnitType>{},
     childrenOf: <childrenUnitType>{},
     secDimensionList: <pairInputType[]>[
-      {
-        pairKey: "a.bwdfwd.c.ddd",
-        pairVal: "aaaaaaaaaaaaaaaaaaaa",
-      },
-      {
-        pairKey: "a.b.c.vvssssssv",
-        pairVal: "bbbbbbbbbbbbbbbbbb",
-      },
-      {
-        pairKey: "a.b.c.vvv.iiidddi",
-        pairVal: "ccccccccccccccccccc",
-      },
       // {
-      //   pairKey: "aaa.bbb.ccc",
-      //   pairVal: "aaaaaaaaaaaaaaaaa",
+      //   pairKey: "a.bwdfwd.c.ddd",
+      //   pairVal: "aaaaaaaaaaaaaaaaaaaa",
       // },
       // {
-      //   pairKey: "aaa.ddd.eee",
+      //   pairKey: "a.b.c.vvssssssv",
       //   pairVal: "bbbbbbbbbbbbbbbbbb",
       // },
       // {
-      //   pairKey: "fff.ggg.hhh.iii.jjj.kkk.lll",
-      //   pairVal: "cccccccc",
+      //   pairKey: "a.b.c.vvv.iiidddi",
+      //   pairVal: "ccccccccccccccccccc",
       // },
+      {
+        pairKey: "nav.header.creator",
+        pairVal: "3D Fabric Creator",
+      },
+      {
+        pairKey: "nav.icon",
+        pairVal: "Icon name",
+      },
+      {
+        pairKey: "nav.header.product",
+        pairVal: "Product",
+      },
+      {
+        pairKey: "common.feature.experience",
+        pairVal: "Try It Now!",
+      },
+      {
+        pairKey: "common.feature.chooseFabric",
+        pairVal: "Choose Fabric",
+      },
     ],
   }),
   actions: {
@@ -197,60 +205,120 @@ export const useStore = defineStore("main", {
       const nodeArrayByOriId = nodeArray.map((item) => item.id);
       const parentKeys = Object.keys(this.childrenOf);
       const parentValues = Object.values(this.childrenOf);
-      console.log("當下全部 nodeId: ", nodeArrayByOriId);
+      let prevNid = "";
+      // console.log("當下全部 nodeId: ", nodeArrayByOriId);
       // console.log("parentKeys: ", parentKeys);
       // console.log("parentValues: ", parentValues);
 
       // 組合二維陣列
-      nodeList.reduce((prev, currVal, currIndex) => {
+      nodeList.reduce((prev, currVal, currIndex, oriArray) => {
         const nid = "n-" + this.genNonDuplicateID(5);
-
-        // 先搜尋是否有重複的 nodeId
+        let repeatNodeType = false;
+        let prevId = "";
+        // 先判斷是否有重複的 node
         const repeatNodeId = nodeArrayByOriId.indexOf(currVal);
-
+        // console.log("nodeArrayByOriId: ", nodeArrayByOriId);
         // 有重複就取得原 node 資訊
         if (repeatNodeId >= 0) {
-          console.log("repeatNodeId: ", currVal);
-          const repeatNodeInfo = nodeArray[Number(repeatNodeId)];
-          const repeatNodeParentId = repeatNodeInfo.parentId;
+          if (currIndex === 0) {
+            // 如果是陣列中第一位重複, 直接確定是同一個 node
+            // console.log("如果是陣列中第一位重複, 直接確定是同一個 node");
+            repeatNodeType = true;
+          } else {
+            // 不是第一位, 就要判斷 parentId 是否相同
+            // const repeatNodeInfo = nodeArray[Number(repeatNodeId)];
+            prevId = oriArray[currIndex - 1];
+            const prevNidOrder = nodeArrayByOriId.indexOf(prevId);
+            prevNid = parentKeys[Number(prevNidOrder)];
+            ///////////////////////////////////////////////////
+            // 可能會同時有三個以上重複, 全都要檢查
 
-          console.log("repeatNodeParentId: ", repeatNodeParentId);
+            const totalRepeatGroup = nodeArray.filter(
+              (item) => item.id === currVal
+            );
+            const checkInclude = totalRepeatGroup.some(
+              (item) => item.parentId === prevNid
+            );
+            /////////////////////////////////////////////
+            // console.log("repeatNodeId: ", currVal);
+            // console.log("repeatNid: ", repeatNodeInfo.nid);
+            // console.log(
+            //   "repeatParentId ( 重複的上層 Nid ) : ",
+            //   repeatNodeInfo.parentId
+            // );
+            // console.log(prevId);
+            // console.log(nodeArrayByOriId);
+            // console.log("( 自己目前的上層 Nid ) prevNid: ", prevNid);
+            // 重複模式
+            repeatNodeType = true;
+            // 重複的 ndoe, 它們的 parentId 需相同才符合重複規則
+            if (!checkInclude) {
+              // console.log(currVal, "不是真正的重複");
+              repeatNodeType = false;
+            }
+          }
+
+          ///////////////////////////////////////////////////
         } else {
           // 不重複
           // this.childrenOf[`${prev}`].push(nid);
-          console.log("noRepeatNodeId: ", currVal);
+          // console.log("noRepeatNodeId: ", currVal);
+          repeatNodeType = false;
           // 如果 parentId 和 id 相同就覆蓋
+          ///////////////////////////////////////////////////
+          // console.log("oriArray: ", oriArray);
+          // console.log("currVal: ", currVal);
+          ////////////////////////////////////////////////////////////
         }
-        // 全部節點
-        this.nodes[`${nid}`] = {
-          nid: nid,
-          id: currVal,
-          parentId: prev,
-          text: "I am " + currVal,
-          children: [],
-        };
 
-        // 父階層, 先製作空陣列
-        if (!Object.prototype.hasOwnProperty.call(this.childrenOf, nid)) {
-          this.childrenOf[`${nid}`] = [];
-        }
-        if (prev) {
-          // 判斷是否有 key
-          if (Object.prototype.hasOwnProperty.call(this.childrenOf, prev)) {
-            if (repeatNodeId >= 0) {
-              // 重複
-            } else {
-              // 不重複
-            }
-            // 查詢 oriId 有沒有重複值, 沒有重複才推上去
-            this.childrenOf[`${prev}`].push(nid);
-          } else {
-            console.log("其他: ", nid);
-            this.childrenOf[`${prev}`] = [];
+        if (repeatNodeType === false) {
+          // 全部節點
+          this.nodes[`${nid}`] = {
+            nid: nid,
+            id: currVal,
+            parentId: prev,
+            text: "I am " + currVal,
+            children: [],
+          };
+
+          // 父階層, 先製作空陣列
+          if (!Object.prototype.hasOwnProperty.call(this.childrenOf, nid)) {
+            this.childrenOf[`${nid}`] = [];
+          }
+          if (
+            prev &&
+            Object.prototype.hasOwnProperty.call(this.childrenOf, prev)
+          ) {
             this.childrenOf[`${prev}`].push(nid);
           }
         }
-        return nid;
+
+        // currIndex > 0 && nodeArrayByOriId.length > 0 && repeatNodeType
+        if (repeatNodeType) {
+          /////////////////////
+          // console.log("上面-prevNid: ", prevNid);
+          // console.log(`
+          //     id 為 --------------- ${currVal}
+          //     自己的 nid 為 -------  ${nid}
+          //     上層 id 為 ----------- ${prevId}
+          //     上層的 nid 為 -------  ${prevNid}
+          // `);
+          ///////////////////
+          // if (currIndex !== 0) {
+          //   console.log(currVal + "--- 回傳上層 nid? :" + prevNid);
+          //   // 回傳上層 nid?
+          //   return prevNid;
+          // } else {
+          // 如果是重複的第一位, 則回傳自己的 nid
+          const repeatOwnOrder = nodeArrayByOriId.indexOf(currVal);
+          const repeatNodeInfo = nodeArray[Number(repeatOwnOrder)];
+          const repeatOwnNid = repeatNodeInfo.nid;
+          return repeatOwnNid;
+          // }
+        } else {
+          // console.log("下面-nid: ", nid);
+          return nid;
+        }
       }, "");
     },
   },
@@ -275,10 +343,12 @@ export const useStore = defineStore("main", {
         const nodeInfo = nodeArray.filter(
           (node) => node.nid === parentKeys[Number(index)]
         );
+        // console.log(parentKeys[Number(index)]);
         const childrenInfo = item.map((chInfo: any) => {
           const actionNodeKeys: number = nodeKeys.indexOf(chInfo);
           return nodeArray[Number(actionNodeKeys)];
         });
+        // console.log("nodeInfo: ", nodeInfo);
         const newItem = {
           nid: parentKeys[Number(index)],
           id: nodeInfo[0].id,
@@ -286,7 +356,6 @@ export const useStore = defineStore("main", {
           text: "", // parentKeys[index].text
           children: childrenInfo,
         };
-        // console.log("nodeInfo: ", nodeInfo);
         // console.log("childrenInfo: ", childrenInfo);
         // console.log("item: ", item);
         // console.log("newItem: ", newItem);
