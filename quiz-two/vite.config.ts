@@ -37,7 +37,7 @@ export default defineConfig({
       ],
       dts: "src/auto-imports.d.ts",
       eslintrc: {
-        enabled: false,
+        enabled: true,
       },
     }),
     Components({

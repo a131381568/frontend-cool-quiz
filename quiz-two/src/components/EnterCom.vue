@@ -33,7 +33,7 @@ const treeDataChild: LooseObject = computed(() => {
 });
 
 const delTreeAction = () => {
-  store.removeTree(treeDataInnerNid.value);
+  // store.removeTree(treeDataInnerNid.value);
 };
 
 watchDebounced(
@@ -41,15 +41,15 @@ watchDebounced(
   (newVal, oldVal) => {
     console.log(newVal);
     console.log(treeDataInnerNid.value);
-    store.setTree(newVal, oldVal, treeDataInnerNid.value);
+    // store.setTree(newVal, oldVal, treeDataInnerNid.value);
   },
   { debounce: 1000 }
 );
 
 // 初始化
-store.setTree(
-  treeDataInnerText.value,
-  treeDataInnerText.value,
-  treeDataInnerNid.value
-);
+// store.setTree(
+//   treeDataInnerText.value,
+//   treeDataInnerText.value,
+//   treeDataInnerNid.value
+// );
 </script>

@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { isBuffer } from "util";
+import { pairInputType, nodeUnitType, childrenUnitType } from "@/type/types";
 // import router from "./router";
 
 export const useStore = defineStore("main", {
@@ -13,9 +13,9 @@ export const useStore = defineStore("main", {
       children: [],
     },
     ///////
-    nodes: {},
-    childrenOf: {},
-    secDimensionList: [
+    nodes: <nodeUnitType>{},
+    childrenOf: <childrenUnitType>{},
+    secDimensionList: <pairInputType[]>[
       {
         pairKey: "a.bwdfwd.c.ddd",
         pairVal: "aaaaaaaaaaaaaaaaaaaa",
@@ -47,10 +47,10 @@ export const useStore = defineStore("main", {
       this.initTime = new Date().getTime();
     },
     getArraySameResult(a1: string[], a2: string[]) {
-      let i = a1.length;
+      let i: number = a1.length;
       if (i !== a2.length) return false;
       while (i--) {
-        if (a1[i] !== a2[i]) return false;
+        if (a1[Number(i)] !== a2[Number(i)]) return false;
       }
       return true;
     },
@@ -59,139 +59,139 @@ export const useStore = defineStore("main", {
         Math.random().toString().substring(3, randomLength) + Date.now()
       ).toString(36);
     },
-    setTree(nodePath: string, preNodePath: string, hasParentId: string) {
-      const splitArray = nodePath.split(".");
-      const preSplitArray = nodePath.split(".");
-      console.log("splitArray: ", splitArray);
-      // =======================================
-      // 提前判斷
-      let frontRepeatIndex = -1;
-      if (this.get_rootChild > 0) {
-        // 搜尋 store 是否有符合的 root 上層
-        this.mainData.children.forEach((item, index) => {
-          if (item.nid === hasParentId) {
-            frontRepeatIndex = index;
-          }
-        });
+    // setTree(nodePath: string, preNodePath: string, hasParentId: string) {
+    //   const splitArray = nodePath.split(".");
+    //   const preSplitArray = nodePath.split(".");
+    //   console.log("splitArray: ", splitArray);
+    //   // =======================================
+    //   // 提前判斷
+    //   let frontRepeatIndex = -1;
+    //   if (this.get_rootChild > 0) {
+    //     // 搜尋 store 是否有符合的 root 上層
+    //     this.mainData.children.forEach((item, index) => {
+    //       if (item.nid === hasParentId) {
+    //         frontRepeatIndex = index;
+    //       }
+    //     });
 
-        if (frontRepeatIndex >= 0) {
-          // 第一階的 nid
-          console.log("f-hasParentId:  ", frontRepeatIndex);
-        } else {
-          // 不重複的直接加在後面
-          console.log("f-不重複的直接加在後面");
-        }
-      }
-      // ==========================================
-      // 沒有的話就自己建立一個
-      console.log("沒有的話就自己建立一個");
+    //     if (frontRepeatIndex >= 0) {
+    //       // 第一階的 nid
+    //       console.log("f-hasParentId:  ", frontRepeatIndex);
+    //     } else {
+    //       // 不重複的直接加在後面
+    //       console.log("f-不重複的直接加在後面");
+    //     }
+    //   }
+    //   // ==========================================
+    //   // 沒有的話就自己建立一個
+    //   console.log("沒有的話就自己建立一個");
 
-      if (
-        splitArray.length > 0 &&
-        splitArray[0].length > 0 &&
-        splitArray[splitArray.length - 1].length > 0
-      ) {
-        // 先把 node 全部建立出來
-        const rootArray: any = [];
-        // console.log(splitArray);
-        splitArray.reduce((prev, currVal, currIndex) => {
-          // console.log("currIndex: ", currIndex);
-          const genId = "id-" + this.genNonDuplicateID(5);
-          rootArray.push({
-            nid: genId,
-            id: splitArray[currIndex],
-            // parentId: currIndex === 0 ? "" : prev,
-            parentId: currIndex === 0 ? "" : prev,
-            text: currIndex === splitArray.length - 1 ? nodePath : "",
-            children: [],
-          });
-          return genId;
-        }, "");
+    //   if (
+    //     splitArray.length > 0 &&
+    //     splitArray[0].length > 0 &&
+    //     splitArray[splitArray.length - 1].length > 0
+    //   ) {
+    //     // 先把 node 全部建立出來
+    //     const rootArray: any = [];
+    //     // console.log(splitArray);
+    //     splitArray.reduce((prev, currVal, currIndex) => {
+    //       // console.log("currIndex: ", currIndex);
+    //       const genId = "id-" + this.genNonDuplicateID(5);
+    //       rootArray.push({
+    //         nid: genId,
+    //         id: splitArray[currIndex],
+    //         // parentId: currIndex === 0 ? "" : prev,
+    //         parentId: currIndex === 0 ? "" : prev,
+    //         text: currIndex === splitArray.length - 1 ? nodePath : "",
+    //         children: [],
+    //       });
+    //       return genId;
+    //     }, "");
 
-        // 再分階層
-        rootArray.forEach((item: any, index: number, array: any) => {
-          if (item.parentId) {
-            array.forEach((oriVal: any, oriIndex: number) => {
-              if (oriVal.nid === item.parentId) {
-                rootArray[oriIndex].children.push(item);
-              }
-            });
-          }
-        });
+    //     // 再分階層
+    //     rootArray.forEach((item: any, index: number, array: any) => {
+    //       if (item.parentId) {
+    //         array.forEach((oriVal: any, oriIndex: number) => {
+    //           if (oriVal.nid === item.parentId) {
+    //             rootArray[oriIndex].children.push(item);
+    //           }
+    //         });
+    //       }
+    //     });
 
-        // 判斷父層是否為 root 階層, 最後設置
-        // 節點只有一個點
-        const newRootArray = rootArray.filter(
-          (fItemn: any) => !fItemn.parentId
-        );
-        // console.log(newRootArray);
-        // console.log(splitArray[0]);
+    //     // 判斷父層是否為 root 階層, 最後設置
+    //     // 節點只有一個點
+    //     const newRootArray = rootArray.filter(
+    //       (fItemn: any) => !fItemn.parentId
+    //     );
+    //     // console.log(newRootArray);
+    //     // console.log(splitArray[0]);
 
-        if (this.get_rootChild > 0) {
-          this.mainData.children[frontRepeatIndex].children[0] =
-            newRootArray[0];
+    //     if (this.get_rootChild > 0) {
+    //       this.mainData.children[frontRepeatIndex].children[0] =
+    //         newRootArray[0];
 
-          // let repeatIndex = -1;
-          // this.mainData.children.forEach((innderItem, innerIndex) => {
-          //   if (innderItem.id === splitArray[0]) {
-          //     repeatIndex = innerIndex;
-          //   }
-          // });
+    //       // let repeatIndex = -1;
+    //       // this.mainData.children.forEach((innderItem, innerIndex) => {
+    //       //   if (innderItem.id === splitArray[0]) {
+    //       //     repeatIndex = innerIndex;
+    //       //   }
+    //       // });
 
-          // // 判斷是否在第二層含以上重複
-          // if (repeatIndex >= 0) {
-          //   // 第一階重複
+    //       // // 判斷是否在第二層含以上重複
+    //       // if (repeatIndex >= 0) {
+    //       //   // 第一階重複
 
-          //   // 第二階以上重複
-          //   console.log("重複的");
-          //   this.mainData.children[repeatIndex] = newRootArray[0];
-          // } else {
-          //   // 不重複的直接加在後面
-          //   console.log("不重複的直接加在後面");
-          //   this.mainData.children.push(...newRootArray);
-          // }
-        }
-      } else {
-        console.log("???");
-      }
-    },
-    setNewTree() {
-      this.mainData.children.push({
-        // nid: "root-node-nid",
-        nid: "id-" + this.genNonDuplicateID(5),
-        id: "root-node",
-        text: "",
-        children: [],
-      });
-    },
-    removeTree(nId: string) {
-      const newRootTree = this.mainData.children.filter(
-        (item) => item.nid !== nId
-      );
-      this.mainData.children = newRootTree;
-    },
-    initFakeData() {
-      this.mainData.children = [
-        {
-          nid: "id-6bg40ehghn",
-          id: "root-node",
-          text: "nav.header.creator",
-          children: [],
-        },
-        {
-          nid: "id-39k7z6g5az",
-          id: "root-node",
-          text: "nav.icon",
-          children: [],
-        },
-        {
-          nid: "id-9gvlzcbwpv",
-          id: "root-node",
-          text: "common.feature.chooseFabric",
-          children: [],
-        },
-      ];
-    },
+    //       //   // 第二階以上重複
+    //       //   console.log("重複的");
+    //       //   this.mainData.children[repeatIndex] = newRootArray[0];
+    //       // } else {
+    //       //   // 不重複的直接加在後面
+    //       //   console.log("不重複的直接加在後面");
+    //       //   this.mainData.children.push(...newRootArray);
+    //       // }
+    //     }
+    //   } else {
+    //     console.log("???");
+    //   }
+    // },
+    // setNewTree() {
+    //   this.mainData.children.push({
+    //     // nid: "root-node-nid",
+    //     nid: "id-" + this.genNonDuplicateID(5),
+    //     id: "root-node",
+    //     text: "",
+    //     children: [],
+    //   });
+    // },
+    // removeTree(nId: string) {
+    //   const newRootTree = this.mainData.children.filter(
+    //     (item) => item.nid !== nId
+    //   );
+    //   this.mainData.children = newRootTree;
+    // },
+    // initFakeData() {
+    //   this.mainData.children = [
+    //     {
+    //       nid: "id-6bg40ehghn",
+    //       id: "root-node",
+    //       text: "nav.header.creator",
+    //       children: [],
+    //     },
+    //     {
+    //       nid: "id-39k7z6g5az",
+    //       id: "root-node",
+    //       text: "nav.icon",
+    //       children: [],
+    //     },
+    //     {
+    //       nid: "id-9gvlzcbwpv",
+    //       id: "root-node",
+    //       text: "common.feature.chooseFabric",
+    //       children: [],
+    //     },
+    //   ];
+    // },
     changeSecDimension(nodeList: string[]) {
       // if (nodeList.length > 0) {
       //   firstKey = nodeList[0];
@@ -218,11 +218,11 @@ export const useStore = defineStore("main", {
         console.log("currVal: ", currVal);
 
         // 父階層
-        if (!this.childrenOf.hasOwnProperty(currVal)) {
+        if (!Object.prototype.hasOwnProperty.call(this.childrenOf, currVal)) {
           this.childrenOf[`${currVal}`] = [];
         }
         if (prev) {
-          if (this.childrenOf.hasOwnProperty(prev)) {
+          if (Object.prototype.hasOwnProperty.call(this.childrenOf, prev)) {
             // 判斷有沒有重複值, 沒有重複才推上去
             if (this.childrenOf[`${prev}`].indexOf(currVal) >= 0) {
               console.log("沒有重覆");
@@ -256,15 +256,15 @@ export const useStore = defineStore("main", {
       // 父陣列
       const setParentMap = parentValues.map((item, index) => {
         const nodeInfo = nodeArray.filter(
-          (node) => node.id === parentKeys[index]
+          (node) => node.id === parentKeys[Number(index)]
         );
         const childrenInfo = item.map((chInfo: any) => {
-          const actionNodeKeys = nodeKeys.indexOf(chInfo);
-          return nodeArray[actionNodeKeys];
+          const actionNodeKeys: number = nodeKeys.indexOf(chInfo);
+          return nodeArray[Number(actionNodeKeys)];
         });
         const newItem = {
           nid: "",
-          id: parentKeys[index],
+          id: parentKeys[Number(index)],
           parentId: nodeInfo.length > 0 ? nodeInfo[0].parentId : "",
           text: "", // parentKeys[index].text
           children: childrenInfo,
@@ -283,8 +283,10 @@ export const useStore = defineStore("main", {
               const concatIdArray = array.map((item: any) => item.id);
               const childrenArray = currVal.children.map((parenScInfo: any) => {
                 console.log("parenScInfo.id: ", parenScInfo.id);
-                const actionNodeKeys = concatIdArray.indexOf(parenScInfo.id);
-                return array[actionNodeKeys];
+                const actionNodeKeys: number = concatIdArray.indexOf(
+                  parenScInfo.id
+                );
+                return array[Number(actionNodeKeys)];
               });
               currVal.children = childrenArray;
               // 重複

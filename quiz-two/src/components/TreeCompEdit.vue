@@ -71,7 +71,7 @@ watchDebounced(
     console.log("啟動了---setTree???");
     console.log(newVal, oldVal);
     console.log(newVal.toString() === oldVal.toString());
-    store.setTree(String(newVal), String(oldVal), treeDataInnerNid.value);
+    // store.setTree(String(newVal), String(oldVal), treeDataInnerNid.value);
   },
   { debounce: 1500 }
 );

@@ -1,6 +1,7 @@
 <template lang="pug">
 div.page-header
-  button(@click.prevent="store.setNewTree()") add tree
+  //- (@click.prevent="store.setNewTree()")
+  button add tree 
 div.container
   //- TreeCompEdit.left-col(:treeData="store.mainData")
   div.left-col
@@ -149,60 +150,60 @@ const childrenOf = {
   chooseFabric: [],
 };
 
-const mainDataComposition = () => {
-  const parentArray = Object.values(childrenOf);
-  const parentKeys = Object.keys(childrenOf);
+// const mainDataComposition = () => {
+//   const parentArray = Object.values(childrenOf);
+//   const parentKeys = Object.keys(childrenOf);
 
-  const nodeArray = Object.values(nodes);
-  const nodeKeys = Object.keys(nodes);
+//   const nodeArray = Object.values(nodes);
+//   const nodeKeys = Object.keys(nodes);
 
-  const rootTree = {};
+//   const rootTree = {};
 
-  const arr = [1, 3, 4, 5, 6, 7, 8, 9, 10];
-  const fn = (array) => {
-    return array.reduce((prev, curr) => {
-      // 查詢已建立的 陣列 是否有自己的上層
-      let parentId = "";
-      let newVal = "";
-      Object.values(prev).forEach((val) => {
-        if (val.children) {
-          const searchIndex = val.children.indexOf(curr.parent_id);
-          if (searchIndex >= 0) {
-            parentId = val.id;
-            newVal = val.children[searchIndex];
-          }
-        }
-      });
+//   const arr = [1, 3, 4, 5, 6, 7, 8, 9, 10];
+//   const fn = (array) => {
+//     return array.reduce((prev, curr) => {
+//       // 查詢已建立的 陣列 是否有自己的上層
+//       let parentId = "";
+//       let newVal = "";
+//       Object.values(prev).forEach((val) => {
+//         if (val.children) {
+//           const searchIndex = val.children.indexOf(curr.parent_id);
+//           if (searchIndex >= 0) {
+//             parentId = val.id;
+//             newVal = val.children[searchIndex];
+//           }
+//         }
+//       });
 
-      if (newVal.length > 0) {
-        // 建立節點
-        rootTree[parentId].children[newVal] = {
-          id: curr.parent_id,
-          text: "",
-          children: childrenOf[curr.parent_id],
-        };
-      } else {
-        // 建立節點
-        rootTree[curr.parent_id] = {
-          id: curr.parent_id,
-          text: "",
-          children: childrenOf[curr.parent_id],
-        };
-      }
+//       if (newVal.length > 0) {
+//         // 建立節點
+//         rootTree[parentId].children[newVal] = {
+//           id: curr.parent_id,
+//           text: "",
+//           children: childrenOf[curr.parent_id],
+//         };
+//       } else {
+//         // 建立節點
+//         rootTree[curr.parent_id] = {
+//           id: curr.parent_id,
+//           text: "",
+//           children: childrenOf[curr.parent_id],
+//         };
+//       }
 
-      return rootTree;
-    }, []);
-  };
+//       return rootTree;
+//     }, []);
+//   };
 
-  fn(nodeArray);
-  console.log(rootTree);
-};
-mainDataComposition();
+//   fn(nodeArray);
+//   console.log(rootTree);
+// };
+// mainDataComposition();
 
 // -----------------
 
 // 匯入假資料
-store.initFakeData();
+// store.initFakeData();
 </script>
 <style>
 .container {
