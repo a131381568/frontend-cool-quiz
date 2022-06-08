@@ -1,7 +1,7 @@
 <template lang="pug">
 div
   div.tree-component
-    div.title {{ treeData.id }}
+    div.title {{ treeDataOri.id }}
     TreeCompView(v-for="value in treeDataChild" :treeData="value")
 </template>
 <script setup lang="ts">
@@ -37,15 +37,10 @@ const treeDataChild: LooseObject = computed(() => {
   return data.children;
 });
 
-// const emit = defineEmits(["update:treeData"]);
-// const treeDataComTxt = computed({
-//   get() {
-//     return treeData.value.text;
-//   },
-//   set(val) {
-//     emit("update:treeData", val);
-//   },
-// });
+const treeDataOri: LooseObject = computed(() => {
+  const data: LooseObject = treeData.value;
+  return data;
+});
 </script>
 <style>
 .tree-component {

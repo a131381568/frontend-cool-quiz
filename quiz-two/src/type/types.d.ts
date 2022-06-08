@@ -9,14 +9,16 @@ export type pairInputType = {
   pairVal: string;
 };
 
+export type nodeUnitValueType = {
+  nid: string;
+  id: string;
+  parentId: string;
+  text: string;
+  children: any[];
+};
+
 export type nodeUnitType = {
-  [key: string]: {
-    nid: string;
-    id: string;
-    parentId: string;
-    text: string;
-    children: any[];
-  };
+  [key: string]: nodeUnitValueType;
 };
 
 export type childrenUnitType = {
