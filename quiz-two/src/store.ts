@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { useThrottleFn } from "@vueuse/core";
 import {
   pairInputType,
   nodeUnitType,
@@ -6,7 +7,7 @@ import {
   nodeUnitValueType,
 } from "@/type/types";
 // import router from "./router";
-
+const vm = this;
 export const useStore = defineStore("main", {
   state: () => ({
     initTime: 0,
@@ -33,39 +34,41 @@ export const useStore = defineStore("main", {
       //   pairKey: "a.b.c.vvv.iiidddi",
       //   pairVal: "ccccccccccccccccccc",
       // },
-      {
-        pairKey: "nav.header.creator",
-        pairVal: "3D Fabric Creator",
-      },
-      {
-        pairKey: "nav.icon",
-        pairVal: "Icon name",
-      },
-      {
-        pairKey: "nav.header.product",
-        pairVal: "Product",
-      },
-      {
-        pairKey: "common.feature.experience",
-        pairVal: "Try It Now!",
-      },
-      {
-        pairKey: "common.feature.chooseFabric",
-        pairVal: "Choose Fabric",
-      },
-      {
-        pairKey: "xxxxxxxxx.nav",
-        pairVal: "wwwwwwwwwwwwwwwwwwwwww",
-      },
-      {
-        pairKey: "qqqqqqqqqqq.icon",
-        pairVal: "qqqqqqqqqqq",
-      },
-      {
-        pairKey: "asffff.ttt.header.last.creator",
-        pairVal: "hhhhhhhhhhhhhhhhhhhh",
-      },
+      /////////////
+      // {
+      //   pairKey: "nav.header.creator",
+      //   pairVal: "3D Fabric Creator",
+      // },
+      // {
+      //   pairKey: "nav.icon",
+      //   pairVal: "Icon name",
+      // },
+      // {
+      //   pairKey: "nav.header.product",
+      //   pairVal: "Product",
+      // },
+      // {
+      //   pairKey: "common.feature.experience",
+      //   pairVal: "Try It Now!",
+      // },
+      // {
+      //   pairKey: "common.feature.chooseFabric",
+      //   pairVal: "Choose Fabric",
+      // },
+      // {
+      //   pairKey: "xxxxxxxxx.nav",
+      //   pairVal: "wwwwwwwwwwwwwwwwwwwwww",
+      // },
+      // {
+      //   pairKey: "qqqqqqqqqqq.icon",
+      //   pairVal: "qqqqqqqqqqq",
+      // },
+      // {
+      //   pairKey: "asffff.ttt.header.last.creator",
+      //   pairVal: "hhhhhhhhhhhhhhhhhhhh",
+      // },
     ],
+    lockBtn: false,
   }),
   actions: {
     setTime() {
@@ -224,23 +227,25 @@ export const useStore = defineStore("main", {
       }, "");
     },
     addSecDimensionItem() {
+      // 新增輸入欄
       this.secDimensionList.push({
         pairKey: "",
         pairVal: "",
       });
     },
-    removeSecDimensionItem(order: number, pairKey: string) {
+    removeSecDimensionItem(pairKey: string, order: number) {
+      console.log(order);
       // 刪除輸入欄
-      const sdList = this.secDimensionList.filter(
-        (item) => item.pairKey !== pairKey
-      );
-      this.secDimensionList = sdList;
+      // const sdList = this.secDimensionList.filter(
+      //   (item) => item.pairKey !== pairKey
+      // );
+      // this.secDimensionList = sdList;
+
+      this.secDimensionList.splice(order, 1);
 
       // 初始化
-      this.initSecDimension();
-
+      // this.initSecDimension();
       ////////////////////////////////////
-
       // const splitStr = pairKey.split(".");
       // const nodeArray = Object.values(this.nodes);
       // const parentKeys = Object.keys(this.childrenOf);
@@ -317,12 +322,89 @@ export const useStore = defineStore("main", {
     },
     // 初始化事件
     initSecDimension() {
+      console.log("初始化事件");
       this.nodes = {};
       this.childrenOf = {};
       this.secDimensionList.forEach((item) => {
         const splitStr = item.pairKey.split(".");
         this.changeSecDimension(splitStr);
       });
+    },
+    // buildFloorOneTree: useThrottleFn(function (
+    //   nodeList: nodeUnitValueType[],
+    //   nodeTitle: string[],
+    //   parentTitle: string[],
+    //   parentList: any
+    // ) {
+    //   console.log("buildFloorOneTree");
+    //   const nodeArray = nodeList;
+    //   const nodeKeys = nodeTitle;
+    //   const parentKeys = parentTitle;
+    //   const parentValues = parentList;
+    //   // 父陣列
+    //   const setParentMap = parentValues.map((item: any, index: number) => {
+    //     const nodeInfo = nodeArray.filter(
+    //       (node: any) => node.nid === parentKeys[Number(index)]
+    //     );
+    //     const childrenInfo = item.map((chInfo: any) => {
+    //       const actionNodeKeys: number = nodeKeys.indexOf(chInfo);
+    //       return actionNodeKeys >= 0 ? nodeArray[Number(actionNodeKeys)] : [];
+    //     });
+    //     const newItem = {
+    //       nid: parentKeys[Number(index)],
+    //       id: nodeInfo[0].id,
+    //       parentId: nodeInfo.length > 0 ? nodeInfo[0].parentId : "",
+    //       text: "", // parentKeys[index].text
+    //       children: childrenInfo,
+    //     };
+    //     return newItem;
+    //   });
+    //   // 父層巢狀收縮
+    //   const getId = (mainData: any) => {
+    //     if (mainData.children && Array.isArray(mainData.children)) {
+    //       mainData.children.reduce(
+    //         (prev: any, currVal: any, currIndex: number, array: any) => {
+    //           const concatIdArray = array.map((item: any) => item.nid);
+    //           const childrenArray = currVal.children.map((parenScInfo: any) => {
+    //             const actionNodeKeys: number = concatIdArray.indexOf(
+    //               parenScInfo.nid
+    //             );
+    //             return array[Number(actionNodeKeys)];
+    //           });
+    //           currVal.children = childrenArray;
+    //           return currVal;
+    //         },
+    //         []
+    //       );
+    //       const filterMainData = mainData.children.filter(
+    //         (item: any) => !item.parentId
+    //       );
+    //       return filterMainData;
+    //     }
+    //   };
+    //   const mainData = {
+    //     nid: "",
+    //     id: "root",
+    //     parentId: "",
+    //     text: "",
+    //     children: setParentMap,
+    //   };
+    //   // 最後設置
+    //   const settingMainData = {
+    //     nid: "",
+    //     id: "root",
+    //     parentId: "",
+    //     text: "",
+    //     children: getId(mainData),
+    //   };
+    //   this.secDimensionTree = settingMainData;
+    // },
+    // 1000),
+    setLockBtnOpen() {
+      this.lockBtn = true;
+    },
+    setLockBtnClose() {
+      this.lockBtn = false;
     },
   },
   getters: {
@@ -332,32 +414,21 @@ export const useStore = defineStore("main", {
     get_rootChild: (state) => {
       return state.mainData.children.length;
     },
-    get_floorOneTree: (state) => {
+    get_floorOneTree(state) {
       const nodeArray = Object.values(state.nodes);
       const nodeKeys = Object.keys(state.nodes);
       const parentKeys = Object.keys(state.childrenOf);
       const parentValues = Object.values(state.childrenOf);
-      // console.log("nodeArray: ", nodeArray);
-      // console.log("nodeKeys: ", nodeKeys);
-      // console.log("parentKeys: ", parentKeys);
-      // console.log("parentValues: ", parentValues);
+      /////////////////////////////////////////
       // 父陣列
-      const setParentMap = parentValues.map((item, index) => {
+      const setParentMap = parentValues.map((item: any, index: number) => {
         const nodeInfo = nodeArray.filter(
-          (node) => node.nid === parentKeys[Number(index)]
+          (node: any) => node.nid === parentKeys[Number(index)]
         );
-        // console.log(parentKeys[Number(index)]);
         const childrenInfo = item.map((chInfo: any) => {
           const actionNodeKeys: number = nodeKeys.indexOf(chInfo);
-          // console.log("尋找: ", chInfo);
-          // console.log("尋找id: ", state.nodes[`${chInfo}`]);
-          // console.log("actionNodeKeys: ", actionNodeKeys);
-          // 使刪除節點不會錯誤
-          // nodeArray[Number(actionNodeKeys)];
-          // actionNodeKeys >= 0 ? nodeArray[Number(actionNodeKeys)] : [];
           return actionNodeKeys >= 0 ? nodeArray[Number(actionNodeKeys)] : [];
         });
-        // console.log("nodeInfo: ", nodeInfo);
         const newItem = {
           nid: parentKeys[Number(index)],
           id: nodeInfo[0].id,
@@ -365,36 +436,21 @@ export const useStore = defineStore("main", {
           text: "", // parentKeys[index].text
           children: childrenInfo,
         };
-        // console.log("childrenInfo: ", childrenInfo);
-        // console.log("item: ", item);
-        // console.log("newItem: ", newItem);
         return newItem;
       });
-
       // 父層巢狀收縮
       const getId = (mainData: any) => {
         if (mainData.children && Array.isArray(mainData.children)) {
-          // console.log(mainData.children);
           mainData.children.reduce(
             (prev: any, currVal: any, currIndex: number, array: any) => {
-              // console.log(currVal);
               const concatIdArray = array.map((item: any) => item.nid);
-              // console.log(currVal);
-              // console.log(currVal.children);
               const childrenArray = currVal.children.map((parenScInfo: any) => {
-                // console.log("parenScInfo.id: ", parenScInfo.nid);
-                // console.log("parenScInfo: ", parenScInfo);
                 const actionNodeKeys: number = concatIdArray.indexOf(
                   parenScInfo.nid
                 );
                 return array[Number(actionNodeKeys)];
               });
               currVal.children = childrenArray;
-              // 重複
-              // if (!currVal.parentId && currVal.children.length > 0) {
-              //   getId(mainData.children);
-              // }
-              // console.log("prev: ", prev, "currVal: ", currVal);
               return currVal;
             },
             []
@@ -405,7 +461,6 @@ export const useStore = defineStore("main", {
           return filterMainData;
         }
       };
-
       const mainData = {
         nid: "",
         id: "root",
@@ -413,7 +468,6 @@ export const useStore = defineStore("main", {
         text: "",
         children: setParentMap,
       };
-
       // 最後設置
       const settingMainData = {
         nid: "",
@@ -422,8 +476,114 @@ export const useStore = defineStore("main", {
         text: "",
         children: getId(mainData),
       };
-
+      ////////////////////////////////////
+      // const result = state.secDimensionTree;
       return settingMainData;
+    },
+    get_lockBtnState(state) {
+      return state.lockBtn;
+    },
+    get_nodes(state) {
+      return state.nodes;
+    },
+    get_childrenOf(state) {
+      return state.childrenOf;
+    },
+    // bak_get_floorOneTree: (state) => {
+    //   const nodeArray = Object.values(state.nodes);
+    //   const nodeKeys = Object.keys(state.nodes);
+    //   const parentKeys = Object.keys(state.childrenOf);
+    //   const parentValues = Object.values(state.childrenOf);
+    //   // console.log("nodeArray: ", nodeArray);
+    //   // console.log("nodeKeys: ", nodeKeys);
+    //   // console.log("parentKeys: ", parentKeys);
+    //   // console.log("parentValues: ", parentValues);
+    //   // 父陣列
+    //   const setParentMap = parentValues.map((item, index) => {
+    //     const nodeInfo = nodeArray.filter(
+    //       (node) => node.nid === parentKeys[Number(index)]
+    //     );
+    //     // console.log(parentKeys[Number(index)]);
+    //     const childrenInfo = item.map((chInfo: any) => {
+    //       const actionNodeKeys: number = nodeKeys.indexOf(chInfo);
+    //       // console.log("尋找: ", chInfo);
+    //       // console.log("尋找id: ", state.nodes[`${chInfo}`]);
+    //       // console.log("actionNodeKeys: ", actionNodeKeys);
+    //       // 使刪除節點不會錯誤
+    //       // nodeArray[Number(actionNodeKeys)];
+    //       // actionNodeKeys >= 0 ? nodeArray[Number(actionNodeKeys)] : [];
+    //       return actionNodeKeys >= 0 ? nodeArray[Number(actionNodeKeys)] : [];
+    //     });
+    //     // console.log("nodeInfo: ", nodeInfo);
+    //     const newItem = {
+    //       nid: parentKeys[Number(index)],
+    //       id: nodeInfo[0].id,
+    //       parentId: nodeInfo.length > 0 ? nodeInfo[0].parentId : "",
+    //       text: "", // parentKeys[index].text
+    //       children: childrenInfo,
+    //     };
+    //     // console.log("childrenInfo: ", childrenInfo);
+    //     // console.log("item: ", item);
+    //     // console.log("newItem: ", newItem);
+    //     return newItem;
+    //   });
+
+    //   // 父層巢狀收縮
+    //   const getId = (mainData: any) => {
+    //     if (mainData.children && Array.isArray(mainData.children)) {
+    //       // console.log(mainData.children);
+    //       mainData.children.reduce(
+    //         (prev: any, currVal: any, currIndex: number, array: any) => {
+    //           // console.log(currVal);
+    //           const concatIdArray = array.map((item: any) => item.nid);
+    //           // console.log(currVal);
+    //           // console.log(currVal.children);
+    //           const childrenArray = currVal.children.map((parenScInfo: any) => {
+    //             // console.log("parenScInfo.id: ", parenScInfo.nid);
+    //             // console.log("parenScInfo: ", parenScInfo);
+    //             const actionNodeKeys: number = concatIdArray.indexOf(
+    //               parenScInfo.nid
+    //             );
+    //             return array[Number(actionNodeKeys)];
+    //           });
+    //           currVal.children = childrenArray;
+    //           // 重複
+    //           // if (!currVal.parentId && currVal.children.length > 0) {
+    //           //   getId(mainData.children);
+    //           // }
+    //           // console.log("prev: ", prev, "currVal: ", currVal);
+    //           return currVal;
+    //         },
+    //         []
+    //       );
+    //       const filterMainData = mainData.children.filter(
+    //         (item: any) => !item.parentId
+    //       );
+    //       return filterMainData;
+    //     }
+    //   };
+
+    //   const mainData = {
+    //     nid: "",
+    //     id: "root",
+    //     parentId: "",
+    //     text: "",
+    //     children: setParentMap,
+    //   };
+
+    //   // 最後設置
+    //   const settingMainData = {
+    //     nid: "",
+    //     id: "root",
+    //     parentId: "",
+    //     text: "",
+    //     children: getId(mainData),
+    //   };
+
+    //   return settingMainData;
+    // },
+    get_secDimensionList(state) {
+      return state.secDimensionList;
     },
   },
 });

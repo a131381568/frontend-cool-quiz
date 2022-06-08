@@ -1,10 +1,10 @@
 <template lang="pug">
 div.sec-dimensio-input
   input(type="text" v-model.trim="keySplitArray.pairKey")
-  button(@click.prevent="rmPairInput()") delete
+  button(@click.prevent="rmPairInput()" :disabled="store.get_lockBtnState") delete
 </template>
 <script setup lang="ts">
-import { watchDebounced } from "@vueuse/core";
+// import { useDebounceFn } from "@vueuse/core";
 interface LooseObject {
   [key: string]: any;
 }
@@ -18,7 +18,11 @@ const props = defineProps<{
       pairVal: "";
     };
   };
-  order: number;
+  order: {
+    type: number;
+    required: false;
+    default: 0;
+  };
 }>();
 const { textSplit, order } = toRefs(props);
 const emit = defineEmits(["update:textSplit"]);
@@ -38,9 +42,21 @@ const textSplitArray: LooseObject = computed(() => {
 });
 
 // 刪除事件
-const rmPairInput = () => {
-  store.removeSecDimensionItem(Number(order), textSplitArray.value);
+const rmPairInput = async () => {
+  await store.setLockBtnOpen();
+  await store.removeSecDimensionItem(textSplitArray.value, Number(order.value));
+  await setTimeout(() => {
+    store.setLockBtnClose();
+  }, 1000);
 };
+
+// const rmPairInput = useDebounceFn(async () => {
+//   await store.setLockBtnOpen();
+//   await store.removeSecDimensionItem(textSplitArray.value);
+//   await setTimeout(() => {
+//     store.setLockBtnClose();
+//   }, 1000);
+// }, 0);
 
 // watchDebounced(
 //   textSplitArray,

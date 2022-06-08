@@ -1,15 +1,14 @@
 <template lang="pug">
 div.page-header
-  button(@click.prevent="store.addSecDimensionItem()") add tree 
+  button(@click.prevent="addPairInput()" :disabled="store.get_lockBtnState") add tree 
 div.container
   div.left-col
     <hr>
-    SecDimensioInput(:textSplit="pair" :order="index" v-for="(pair,index) in store.secDimensionList" :key="index")
+    SecDimensioInput(:textSplit="pair" :order="Number(index)" v-for="(pair,index) in store.secDimensionList" :key="index")
   TreeCompView.right-col(:treeData="secDimensionTree")
 </template>
 <script setup lang="ts">
-import { watchDebounced } from "@vueuse/core";
-// import { pairInputType } from "@/type/types";
+import { watchDebounced, useDebounceFn } from "@vueuse/core";
 const router = useRouter();
 const store = useStore();
 
@@ -25,16 +24,32 @@ const secDimensionArray = computed(() => {
   return store.secDimensionList;
 });
 
+// 監聽輸入欄更改事件
 watchDebounced(
   secDimensionArray.value,
-  (newVal: any, oldVal: any) => {
-    console.log(newVal, oldVal);
-    store.initSecDimension();
+  (newVal) => {
+    console.log("觸發監聽");
+    if (!newVal[newVal.length - 1].pairKey) {
+      console.log("沒值");
+    } else {
+      console.log("有值");
+      // 組成二維振烈
+      store.initSecDimension();
+    }
   },
   { debounce: 1000 }
 );
 
-// 初始化事件
+// 新增事件
+const addPairInput = async () => {
+  await store.setLockBtnOpen();
+  await store.addSecDimensionItem();
+  await setTimeout(() => {
+    store.setLockBtnClose();
+  }, 1000);
+};
+
+// 初始化
 store.initSecDimension();
 </script>
 <style>

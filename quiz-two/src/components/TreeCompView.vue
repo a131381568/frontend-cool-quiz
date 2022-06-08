@@ -1,5 +1,5 @@
 <template lang="pug">
-div
+div(v-if="treeDataOri")
   div.tree-component
     div.title {{ treeDataOri.id }}
     TreeCompView(v-for="value in treeDataChild" :treeData="value")
