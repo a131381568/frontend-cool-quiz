@@ -34,6 +34,7 @@ const keySplitArray: LooseObject = computed({
     emit("update:textSplit", val);
   },
 });
+
 const textSplitArray: LooseObject = computed(() => {
   const data: LooseObject = textSplit.value;
   return data.pairKey;
@@ -47,110 +48,4 @@ const rmPairInput = async () => {
     store.setLockBtnClose();
   }, 1000);
 };
-
-// const rmPairInput = useDebounceFn(async () => {
-//   await store.setLockBtnOpen();
-//   await store.removeSecDimensionItem(textSplitArray.value);
-//   await setTimeout(() => {
-//     store.setLockBtnClose();
-//   }, 1000);
-// }, 0);
-
-// watchDebounced(
-//   textSplitArray,
-//   (newVal, oldVal) => {
-//     // 判斷修改形式
-//     const oldSplitArray = oldVal.split(".");
-//     const newSplitArray = newVal.split(".");
-//     const oldSplitLen = oldSplitArray.length;
-//     const newSplitLen = newSplitArray.length;
-
-//     console.log("oldSplitArray: ", oldSplitArray);
-//     console.log("newSplitArray: ", newSplitArray);
-
-//     if (oldSplitLen === newSplitLen) {
-//       if (newSplitArray[0] === oldSplitArray[0]) {
-//         // 有可能只改結尾值
-//         const oldExcludeEndNode = oldSplitArray.filter(
-//           (item: string, index: number) => {
-//             if (index < oldSplitLen - 1) {
-//               return item;
-//             }
-//           }
-//         );
-//         const newExcludeEndNode = newSplitArray.filter(
-//           (item: string, index: number) => {
-//             if (index < newSplitLen - 1) {
-//               return item;
-//             }
-//           }
-//         );
-//         const compareArrSame = store.getArraySameResult(
-//           oldExcludeEndNode,
-//           newExcludeEndNode
-//         );
-//         // 結尾值變更, 不用新增, 更改原本的值
-//         if (compareArrSame) {
-//           console.log("只有改結尾值");
-//         }
-//         // 中繼節點更名 或 延伸分支
-//         if (newSplitArray[newSplitLen - 1] === oldSplitArray[oldSplitLen - 1]) {
-//           console.log("改中間節點");
-//         }
-//       } else {
-//         // 新增 root
-//         console.log("起始節點被更改");
-//       }
-//     } else {
-//       // 走新增路線
-//       console.log("走新增路線");
-//     }
-
-//     const rmEmtpyArray = newSplitArray.filter(
-//       (item: string) => item.length !== 0
-//     );
-//     store.changeSecDimension(rmEmtpyArray);
-//   },
-//   { debounce: 1000 }
-// );
-
-// // 初始化
-// const splitStr = textSplitArray.value.split(".");
-// if (splitStr.length > 0) {
-//   if (splitStr[0].length > 0) {
-//     store.changeSecDimension(textSplitArray.value.split("."));
-//   }
-// }
 </script>
-<style scoped lang="scss">
-.sec-dimensio-input {
-  margin-top: 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  &:nth-child(1) {
-    margin-top: 0;
-  }
-  .import-pair-key {
-    width: calc(50% - 3rem);
-  }
-  .import-pair-val {
-    @extend .import-pair-key;
-  }
-  .close-icon {
-    width: 20px;
-    display: flex;
-    fill: #39b3aa;
-  }
-  input {
-    padding: 0.3rem 0;
-    background: none;
-    margin-right: 1rem;
-    border-width: 0 0 1px 0;
-    outline: none;
-    box-shadow: none;
-    border-color: #39b3aa;
-    color: #d6e7e6;
-  }
-}
-</style>

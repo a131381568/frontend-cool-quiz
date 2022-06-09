@@ -1,0 +1,56 @@
+.tree-component-container {
+  .tree-component {
+    @extend %transet;
+    overflow: hidden;
+    padding: 0.2rem 0;
+    margin: 0.2rem 2rem;
+    text-align: left;
+    width: auto;
+    height: auto;
+    &.content-hide {
+      height: 27px;
+    }
+    &.content-lock {
+      height: 27px;
+    }
+    .accordion-header {
+      @include inline-middle();
+      height: 25px;
+      &:before {
+        content: "";
+        height: 100%;
+        @include inline-middle();
+      }
+      .pair-key {
+        @include inline-middle();
+        font-weight: 700;
+        height: 25px;
+      }
+      .accordion-toggle-btn {
+        @include inline-middle();
+        margin: 0 0.4rem;
+        height: 19px;
+        svg {
+          @extend %mainFillColor;
+          @extend %transet;
+          &:hover {
+            @extend %grayFillColor;
+          }
+        }
+        &.title-colon {
+          margin: -0.2rem 0.4rem 0 0.2rem;
+          height: auto;
+        }
+      }
+    }
+    .accordion-content {
+      @include inline-middle();
+      height: 25px;
+      .pair-val {
+        @extend %spColor;
+        vertical-align: middle;
+        height: 25px;
+      }
+    }
+  }
+}

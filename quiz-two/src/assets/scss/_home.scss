@@ -1,0 +1,108 @@
+html {
+  @extend %fontFam;
+  @extend %h6;
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0;
+  overflow-x: hidden;
+  * {
+    font-size: 1rem;
+  }
+  body {
+    @extend %subBg;
+    width: 100%;
+    height: auto;
+    margin: 0 auto;
+    padding: 0;
+    overflow-x: hidden;
+    color: #f1fdff;
+    .container {
+      width: 100%;
+      height: auto;
+      display: flex;
+      justify-content: space-between;
+      margin: 4rem auto;
+      // 筆電以下
+      @include nb-bottm-w() {
+        flex-wrap: wrap;
+      }
+      // 手機以下
+      @include phone-w() {
+        margin: 0 auto;
+      }
+      .left-col {
+        width: 50%;
+        padding: 4rem;
+        // 筆電以下
+        @include nb-bottm-w() {
+          width: 100%;
+          order: 1;
+        }
+        // 手機以下
+        @include phone-w() {
+          padding: 2rem;
+        }
+      }
+      .right-col {
+        @extend %mainBorderColor;
+        width: 50%;
+        padding: 4rem;
+        border-width: 0 0 0 1px;
+        // 筆電以下
+        @include nb-bottm-w() {
+          width: 100%;
+          order: 0;
+          padding-top: 0;
+          border-bottom: 1px solid $main-color;
+          border-left: 0;
+        }
+        // 手機以下
+        @include phone-w() {
+          padding: 2rem;
+        }
+        & > .tree-component {
+          margin: 0;
+          & > .accordion-header {
+            display: none;
+            margin: 0;
+            padding: 0;
+            & > .accordion-toggle-btn {
+              display: none;
+              margin: 0;
+              padding: 0;
+            }
+          }
+          & > .accordion-content {
+            display: none;
+          }
+          & > .tree-component-container {
+            & > .tree-component {
+              margin: 0;
+            }
+          }
+        }
+      }
+      div[disabled="true"] {
+        pointer-events: none;
+      }
+      .add-pair-btn {
+        @extend %transet;
+        @extend %mainBg;
+        @extend %h7;
+        cursor: pointer;
+        font-weight: 700;
+        width: 200px;
+        text-align: center;
+        padding: 0.4rem 0.8rem;
+        border-radius: 0.2rem;
+        margin: 3.6rem auto;
+        &:hover {
+          @extend %grayBg;
+          @extend %mainColor;
+        }
+      }
+    }
+    // media
+  }
+}

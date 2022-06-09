@@ -1,0 +1,208 @@
+//先針對media queries的width設為變數
+$pc-full: 1903px;
+$pcm-media: 1750px;
+$pcs-media: 1680px;
+$pcx-media: 1600px;
+$nb-media: 1440px;
+$nbs-media: 1366px;
+$nbxs-media: 1280px;
+$pad-media: 1112px;
+$padn-media: 1024px;
+$padm-media: 991px;
+$pads-media: 768px;
+$phone-media: 767px;
+$phonem-media: 450px;
+$phones-media: 360px;
+
+//把變數帶入mixin中,可使用變數來調動media queries的width
+
+// 1903 > n > 1025
+//中螢幕以下 平板以上
+@mixin pcfull-w() {
+  @media only screen and (max-width: $pc-full) and (min-width: ($padn-media + 1)) {
+    @content;
+  }
+}
+
+//中螢幕以下 筆電以上 1750 > n > 1680
+@mixin pcm-w-notnb() {
+  @media only screen and (max-width: $pcm-media) and (min-width: ($pcs-media + 1)) {
+    @content;
+  }
+}
+
+// n > 1681
+//小螢幕以上
+@mixin pcs-over-w() {
+  @media only screen and (min-width: ($pcs-media + 1)) {
+    @content;
+  }
+}
+
+// 1680 > n > 1441
+//小螢幕(小)
+@mixin pcs-w() {
+  @media only screen and (max-width: $pcs-media) and (min-width: ($nb-media + 1)) {
+    @content;
+  }
+}
+
+// 1600 > 1024
+//小螢幕以下 平板以上
+@mixin pcs-w-padl() {
+  @media only screen and (max-width: $pcx-media) and (min-width: ($padn-media + 1)) {
+    @content;
+  }
+}
+
+// 1440 > n > 1025
+//全筆電
+@mixin nball-w() {
+  @media only screen and (max-width: $nb-media) and (min-width: ($padn-media + 1)) {
+    @content;
+  }
+}
+
+// 1440 > n > 1281
+//全筆電(除了1280)
+@mixin nball-w-n128() {
+  @media only screen and (max-width: $nb-media) and (min-width: ($nbxs-media + 1)) {
+    @content;
+  }
+}
+
+// n > 1441
+//筆電以上
+@mixin nb-top-w() {
+  @media only screen and (min-width: ($nb-media + 1)) {
+    @content;
+  }
+}
+
+// n < 1441
+//筆電以下
+@mixin nb-bottm-w() {
+  @media only screen and (max-width: $nb-media) {
+    @content;
+  }
+}
+
+// 1440 > n > 1367
+//筆電
+@mixin nb-w() {
+  @media only screen and (max-width: $nb-media) and (min-width: ($nbs-media + 1)) {
+    @content;
+  }
+}
+
+// 1366 > n > 1113
+//筆電(小)
+@mixin nbs-w() {
+  @media only screen and (max-width: $nbs-media) and (min-width: ($pad-media + 1)) {
+    @content;
+  }
+}
+
+// 1280 > n > 1025
+//極小桌機螢幕
+@mixin nbxxs-w() {
+  @media only screen and (max-width: $nbxs-media) and (min-width: ($padn-media + 1)) {
+    @content;
+  }
+}
+
+// n > 1113
+//行動載具以外
+@mixin over-mobileall-w() {
+  @media only screen and (min-width: ($pad-media + 1)) {
+    @content;
+  }
+}
+
+// 1112 > n
+//全部行動載具
+@mixin mobileall-w() {
+  @media only screen and (max-width: $pad-media) {
+    @content;
+  }
+}
+
+// 1112 > n > 768
+//全部的平板(橫+直)
+@mixin pad-p-l-w() {
+  @media only screen and (max-width: $pad-media) and (min-width: $pads-media) {
+    @content;
+  }
+}
+
+// 1112 > n > 992
+//橫平板
+@mixin pad-w() {
+  @media only screen and (max-width: $pad-media) and (min-width: ($padm-media + 1)) {
+    @content;
+  }
+}
+
+// 1112 > n > 1025
+//橫平板(ipad pro 小 與 普通的 ipad 之間)
+@mixin padn-w() {
+  @media only screen and (max-width: $pad-media) and (min-width: ($padn-media + 1)) {
+    @content;
+  }
+}
+
+// n > 992
+//橫平板以上的載具
+@mixin pad-top-pcs-w() {
+  @media only screen and (min-width: ($padm-media + 1)) {
+    @content;
+  }
+}
+
+// 991 > n
+//直平板以下的載具
+@mixin pads-phone-w() {
+  @media only screen and (max-width: $padm-media) {
+    @content;
+  }
+}
+
+// 991 > n > 768
+//直平板
+@mixin pads-w() {
+  @media only screen and (max-width: $padm-media) and (min-width: $pads-media) {
+    @content;
+  }
+}
+
+// n > 767
+//手機 以上的尺寸
+@mixin phone-w-outer() {
+  @media only screen and (min-width: $phone-media) {
+    @content;
+  }
+}
+
+// 767 > n
+//手機
+@mixin phone-w() {
+  @media only screen and (max-width: $phone-media) {
+    @content;
+  }
+}
+
+// 450 > n
+//手機(小)
+@mixin phonem-w() {
+  @media only screen and (max-width: $phonem-media) {
+    @content;
+  }
+}
+
+// 360 > n
+//手機(更小)
+@mixin phones-w() {
+  @media only screen and (max-width: $phones-media) {
+    @content;
+  }
+}

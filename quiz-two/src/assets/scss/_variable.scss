@@ -1,0 +1,211 @@
+$main-color: #39b3aa;
+$sub-color: #032e42;
+$sp-color: #ffc063;
+$dark-color: #404040;
+$white-color: #fff;
+$gray-color: #f1fdff;
+$gray-opacity: rgb(241 253 255 / 80%);
+
+$h1: 64px;
+$h2: 54px;
+$h3: 40px;
+$h4: 30px;
+$h5: 24px;
+$h6: 20px;
+$h7: 16px;
+$h8: 14px;
+$h9: 10px;
+
+//-------------------------------- 顏色背景繼承 --------------------------------
+
+// 主色
+%mainColor {
+  color: $main-color;
+}
+
+// 主色背景
+%mainBg {
+  background: $main-color;
+}
+
+// 副色
+%subColor {
+  color: $sub-color;
+}
+
+// 副色背景
+%subBg {
+  background: $sub-color;
+}
+
+// 特殊色
+%spColor {
+  color: $sp-color;
+}
+
+// 特殊色背景
+%spBg {
+  background: $sp-color;
+}
+
+// 特殊黑色
+%darkColor {
+  color: $dark-color;
+}
+
+// 特殊黑色背景
+%darkBg {
+  background: $dark-color;
+}
+
+// 特殊白色
+%whiteColor {
+  color: $white-color;
+}
+
+// 特殊白色背景
+%whiteBg {
+  background: $white-color;
+}
+
+// 特殊灰色文字
+%grayColor {
+  color: $gray-color;
+}
+
+// 灰色文字透明
+%grayColorOpacity {
+  color: $gray-opacity;
+}
+
+// 特殊灰色背景
+%grayBg {
+  background: $gray-color;
+}
+
+// 主色線條
+%mainBorderColor {
+  border: 1px solid $main-color;
+}
+
+// 主色 svg 上色
+%mainFillColor {
+  fill: $main-color;
+}
+
+// 特殊灰色 svg 上色
+%grayFillColor {
+  fill: $gray-color;
+}
+
+// 特殊灰色線條
+%grayBorderColor {
+  border: 1px solid $gray-color;
+}
+
+//-------------------------------- 字級繼承 --------------------------------
+
+%h1 {
+  font-size: $h1;
+}
+
+%h2 {
+  font-size: $h2;
+}
+
+%h3 {
+  font-size: $h3;
+}
+
+%h4 {
+  font-size: $h4;
+}
+
+%h5 {
+  font-size: $h5;
+}
+
+%h6 {
+  font-size: $h6;
+}
+
+%h7 {
+  font-size: $h7;
+}
+
+%h8 {
+  font-size: $h8;
+}
+
+%h9 {
+  font-size: $h9;
+}
+
+//-------------------------------- 字體與粗細繼承 --------------------------------
+
+%fontFam {
+  font-family: "Arial", "Noto Sans TC", "微軟正黑體", "Microsoft JhengHei",
+    "Heiti TC", "黑體", sans-serif, serif;
+  @extend %fontSpacE;
+}
+
+%fontSpacE {
+  letter-spacing: 0.05rem;
+}
+
+//-------------------------------- 動畫 --------------------------------
+%transet {
+  transition: all 1s;
+}
+
+//-------------------------------- function 函式 --------------------------------
+
+@mixin no-wrap($lines) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: $lines;
+  -webkit-box-orient: vertical;
+}
+
+// 單行文字超出隱藏並顯示...
+@mixin line-text-overflow() {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// 多行文字超過顯示...，僅適用於 webkit 和行動裝置
+@mixin text-overflow($line: 2) {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $line;
+  overflow: hidden;
+}
+
+/* 四周陰影 */
+@mixin box-shadow($bulr: 10px, $color: rgba(189, 205, 211, 0.5)) {
+  -webkit-box-shadow: 0 0 $bulr $color;
+  -moz-box-shadow: 0 0 $bulr $color;
+  box-shadow: 0 0 $bulr $color;
+}
+
+// flex 容器樣式
+@mixin layout($dir: column, $justify: center, $align: right) {
+  display: flex;
+  flex-direction: $dir;
+  justify-content: $justify;
+  align-items: $align;
+}
+
+@mixin userselect($val: none) {
+  -webkit-user-select: $val;
+  -moz-user-select: $val;
+  -ms-user-select: $val;
+  user-select: $val;
+}
+
+@mixin inline-middle() {
+  display: inline-block;
+  vertical-align: middle;
+}

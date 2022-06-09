@@ -42,10 +42,6 @@ export const useStore = defineStore("main", {
         pairKey: "common.feature.chooseFabric",
         pairVal: "Choose Fabric",
       },
-      {
-        pairKey: "common",
-        pairVal: "xxxxxxxx",
-      },
     ],
     lockBtn: false,
   }),
@@ -183,9 +179,6 @@ export const useStore = defineStore("main", {
         // 有重複就取得原 node 資訊
         if (repeatNodeType) {
           console.log(ownNode);
-          // 有重複又是最後一階, 就把字串更新上去
-          this.nodes[`${ownNode[0].nid}`].text = updatePairValInNode();
-
           console.log(`
               id 為 --------------- ${currVal}
               自己的隨機 nid 為 -------  ${nid}
@@ -199,6 +192,8 @@ export const useStore = defineStore("main", {
             if (floorOneInfo.length > 0) {
               floorOneNid = floorOneInfo[0].nid;
             }
+            // 有重複又是最後一階, 就把字串更新上去
+            this.nodes[`${floorOneNid}`].text = updatePairValInNode();
             return floorOneNid;
           } else {
             if (
@@ -207,6 +202,8 @@ export const useStore = defineStore("main", {
               multipleRepeatType === 4
             ) {
               // 頂層重複 + 自己不重複 || 頂層不重複 + 自己不重複
+              // 有重複又是最後一階, 就把字串更新上去
+              this.nodes[`${nid}`].text = updatePairValInNode();
               return nid;
             } else if (multipleRepeatType === 1 || multipleRepeatType === 3) {
               // 頂層重複 + 自己重複 || 頂層不重複 + 自己重複
@@ -248,7 +245,7 @@ export const useStore = defineStore("main", {
                 // 如果要查詢左右, 則是要判斷 parentId 是否相同
                 console.log("realOwnNodeInfo: ", realOwnNodeInfo);
                 console.log("oriArray: ", oriArray);
-                if (realOwnNodeInfo.id) {
+                if (realOwnNodeInfo.id && realOwnNodeInfo.parentId) {
                   const ownParentId = oriArray[currIndex - 1];
                   const searchParentId =
                     this.nodes[`${realOwnNodeInfo.parentId}`].id;
@@ -256,9 +253,15 @@ export const useStore = defineStore("main", {
                   console.log("searchParentId: ", searchParentId);
                   if (ownParentId === searchParentId) {
                     console.log("回傳 realOwnNodeInfo: ", realOwnNodeInfo.nid);
+                    // 有重複又是最後一階, 就把字串更新上去
+                    this.nodes[`${realOwnNodeInfo.nid}`].text =
+                      updatePairValInNode();
+                    // 回傳真正的 nid
                     return realOwnNodeInfo.nid;
                   } else {
                     console.log("新增 nid: ", nid);
+                    // 有重複又是最後一階, 就把字串更新上去
+                    this.nodes[`${nid}`].text = updatePairValInNode();
                     return nid;
                   }
                 } else {
@@ -270,6 +273,8 @@ export const useStore = defineStore("main", {
               }
             } else {
               // 預設不重複, 回傳 nid
+              // 有重複又是最後一階, 就把字串更新上去
+              this.nodes[`${nid}`].text = updatePairValInNode();
               console.log("預設不重複, 回傳 nid");
               return nid;
             }

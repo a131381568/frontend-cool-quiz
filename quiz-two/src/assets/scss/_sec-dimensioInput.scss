@@ -1,0 +1,47 @@
+.sec-dimensio-input {
+  // @include layout();
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+  &:nth-child(1) {
+    margin-top: 0;
+  }
+  .import-pair-key {
+    width: calc(50% - 3rem);
+  }
+  .import-pair-val {
+    @extend .import-pair-key;
+  }
+  .close-icon {
+    @extend %transet;
+    @extend %mainFillColor;
+    width: 20px;
+    display: flex;
+    cursor: pointer;
+    &:hover {
+      @extend %grayFillColor;
+    }
+  }
+  input {
+    @extend %mainBorderColor;
+    @extend %grayColorOpacity;
+    @extend %transet;
+    padding: 0.3rem 0;
+    background: none;
+    margin-right: 1rem;
+    border-width: 0 0 1px 0;
+    outline: none;
+    box-shadow: none;
+    &:hover {
+      @extend %grayBorderColor;
+      @extend %grayColor;
+      border-width: 0 0 1px 0;
+    }
+    &:focus {
+      @extend %grayBorderColor;
+
+      @extend %grayColor;
+      border-width: 0 0 1px 0;
+    }
+  }
+}
