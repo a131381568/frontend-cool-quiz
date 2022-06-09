@@ -1,7 +1,9 @@
 <template lang="pug">
 div.sec-dimensio-input
-  input(type="text" v-model.trim="keySplitArray.pairKey")
-  button(@click.prevent="rmPairInput()" :disabled="store.get_lockBtnState") delete
+  input.import-pair-key(type="text" v-model.trim="keySplitArray.pairKey")
+  input.import-pair-val(type="text" v-model.trim="keySplitArray.pairVal")
+  div.close-icon(@click.prevent="rmPairInput()" :disabled="store.get_lockBtnState")
+    CloseIcon
 </template>
 <script setup lang="ts">
 // import { useDebounceFn } from "@vueuse/core";
@@ -120,3 +122,35 @@ const rmPairInput = async () => {
 //   }
 // }
 </script>
+<style scoped lang="scss">
+.sec-dimensio-input {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  &:nth-child(1) {
+    margin-top: 0;
+  }
+  .import-pair-key {
+    width: calc(50% - 3rem);
+  }
+  .import-pair-val {
+    @extend .import-pair-key;
+  }
+  .close-icon {
+    width: 20px;
+    display: flex;
+    fill: #39b3aa;
+  }
+  input {
+    padding: 0.3rem 0;
+    background: none;
+    margin-right: 1rem;
+    border-width: 0 0 1px 0;
+    outline: none;
+    box-shadow: none;
+    border-color: #39b3aa;
+    color: #d6e7e6;
+  }
+}
+</style>

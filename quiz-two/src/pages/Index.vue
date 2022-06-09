@@ -1,10 +1,8 @@
 <template lang="pug">
-div.page-header
-  button(@click.prevent="addPairInput()" :disabled="store.get_lockBtnState") add tree 
 div.container
   div.left-col
-    <hr>
     SecDimensioInput(:textSplit="pair" :order="index" v-for="(pair,index) in store.secDimensionList" :key="index")
+    div.add-pair-btn(@click.prevent="addPairInput()" :disabled="store.get_lockBtnState") Add New Pair
   TreeCompView.right-col(:treeData="secDimensionTree")
 </template>
 <script setup lang="ts">
@@ -58,20 +56,70 @@ const addPairInput = async () => {
 // 初始化
 store.initSecDimension();
 </script>
-<style>
-.container {
+<style lang="scss">
+html {
+  font-family: "Arial", "sans-serif";
+  font-size: 20px;
   width: 100%;
-  height: auto;
-  display: flex;
-  justify-content: space-between;
-}
-.left-col,
-.right-col {
-  width: 50%;
-}
-input[readonly] {
-  background-color: #eee;
-  margin-left: 1rem;
-  border: none;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0;
+  overflow-x: hidden;
+  * {
+    font-size: 1rem;
+  }
+  body {
+    width: 100%;
+    height: auto;
+    margin: 0 auto;
+    padding: 0;
+    overflow-x: hidden;
+    background-color: #107e76;
+    color: #f1fdff;
+    .container {
+      width: 100%;
+      height: auto;
+      display: flex;
+      justify-content: space-between;
+      margin: 4rem auto;
+      .left-col {
+        width: 50%;
+        padding: 4rem;
+      }
+      .right-col {
+        @extend .left-col;
+        border-left: 1px solid #39b3aa;
+        & > .tree-component {
+          margin: 0;
+          & > .accordion-header {
+            display: none;
+            margin: 0;
+            padding: 0;
+            & > .accordion-toggle-btn {
+              display: none;
+              margin: 0;
+              padding: 0;
+            }
+          }
+          & > .accordion-content {
+            display: none;
+          }
+          & > .tree-component-container {
+            & > .tree-component {
+              margin: 0;
+            }
+          }
+        }
+      }
+      .add-pair-btn {
+        width: 200px;
+        background: #39b3aa;
+        text-align: center;
+        padding: 0.3rem 0.5rem;
+        border-radius: 0.2rem;
+        margin: 3.6rem auto;
+      }
+    }
+  }
 }
 </style>

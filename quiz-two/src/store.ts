@@ -22,82 +22,29 @@ export const useStore = defineStore("main", {
     nodes: <nodeUnitType>{},
     childrenOf: <childrenUnitType>{},
     secDimensionList: <pairInputType[]>[
-      // {
-      //   pairKey: "a.bwdfwd.c.ddd",
-      //   pairVal: "aaaaaaaaaaaaaaaaaaaa",
-      // },
-      // {
-      //   pairKey: "a.b.c.vvssssssv",
-      //   pairVal: "bbbbbbbbbbbbbbbbbb",
-      // },
-      // {
-      //   pairKey: "a.b.c.vvv.iiidddi",
-      //   pairVal: "ccccccccccccccccccc",
-      // },
-      /////////////
-      // {
-      //   pairKey: "nav.header.creator",
-      //   pairVal: "3D Fabric Creator",
-      // },
-      // {
-      //   pairKey: "nav.icon",
-      //   pairVal: "Icon name",
-      // },
-      // {
-      //   pairKey: "nav.header.product",
-      //   pairVal: "Product",
-      // },
-      // {
-      //   pairKey: "common.feature.experience",
-      //   pairVal: "Try It Now!",
-      // },
-      // {
-      //   pairKey: "common.feature.chooseFabric",
-      //   pairVal: "Choose Fabric",
-      // },
-      // {
-      //   pairKey: "xxxxxxxxx.nav",
-      //   pairVal: "wwwwwwwwwwwwwwwwwwwwww",
-      // },
-      // {
-      //   pairKey: "qqqqqqqqqqq.icon",
-      //   pairVal: "qqqqqqqqqqq",
-      // },
-      // {
-      //   pairKey: "asffff.ttt.header.last.creator",
-      //   pairVal: "hhhhhhhhhhhhhhhhhhhh",
-      // },
       {
-        pairKey: "wfdqfewf.tttt.yyyy",
-        pairVal: "111",
+        pairKey: "nav.header.creator",
+        pairVal: "3D Fabric Creator",
       },
       {
-        pairKey: "wfdqfewf.tttt.yyyy",
-        pairVal: "222",
+        pairKey: "nav.icon",
+        pairVal: "Icon name",
       },
       {
-        pairKey: "eeee.oooo.ggg",
-        pairVal: "333",
+        pairKey: "nav.header.product",
+        pairVal: "Product",
       },
       {
-        pairKey: "eeee.oooo.ggg.w00",
-        pairVal: "444",
+        pairKey: "common.feature.experience",
+        pairVal: "Try It Now!",
       },
       {
-        pairKey: "regregreg.tttt.yyyy.ttt",
-        pairVal: "5555",
+        pairKey: "common.feature.chooseFabric",
+        pairVal: "Choose Fabric",
       },
       {
-        pairKey: "a.b.c.d.e",
-        pairVal: "6666",
-      },
-      {
-        pairKey: "wfdqfewf.tttt.yyyy.wwww",
-        pairVal: "7777777777",
-      },
-      {
-        pairKey: "regregreg.tttt.wwww",
-        pairVal: "8888888888",
+        pairKey: "common",
+        pairVal: "xxxxxxxx",
       },
     ],
     lockBtn: false,
@@ -191,27 +138,25 @@ export const useStore = defineStore("main", {
           multipleRepeatType = 4;
         }
 
-        // if (repeatNodeType === false) {
-        //   // 全部節點
-        //   this.nodes[`${nid}`] = {
-        //     nid: nid,
-        //     id: currVal,
-        //     parentId: prev,
-        //     text: "I am " + currVal,
-        //     children: [],
-        //   };
-
-        //   // 父階層, 先製作空陣列
-        //   if (!Object.prototype.hasOwnProperty.call(this.childrenOf, nid)) {
-        //     this.childrenOf[`${nid}`] = [];
-        //   }
-        //   if (
-        //     prev &&
-        //     Object.prototype.hasOwnProperty.call(this.childrenOf, prev)
-        //   ) {
-        //     this.childrenOf[`${prev}`].push(nid);
-        //   }
-        // }
+        // 更新字串函式
+        const updatePairValInNode = () => {
+          let textContent = "";
+          console.log(
+            "如果是最後一輪則加上 text: ",
+            currIndex,
+            oriArray.length
+          );
+          if (currIndex + 1 === oriArray.length) {
+            const filterContent = this.secDimensionList.filter(
+              (item) => item.pairKey === oriArray.join(".")
+            );
+            if (filterContent.length > 0) {
+              console.log(filterContent);
+              textContent = filterContent[filterContent.length - 1].pairVal;
+            }
+          }
+          return textContent;
+        };
 
         // 新增 node + childOf 函式
         const setNodesAndChildOf = () => {
@@ -220,10 +165,9 @@ export const useStore = defineStore("main", {
             nid: nid,
             id: currVal,
             parentId: prev,
-            text: "I am " + currVal,
+            text: updatePairValInNode(), // 如果是最後一輪則加上 text
             children: [],
           };
-
           // 父階層, 先製作空陣列
           if (!Object.prototype.hasOwnProperty.call(this.childrenOf, nid)) {
             this.childrenOf[`${nid}`] = [];
@@ -238,6 +182,10 @@ export const useStore = defineStore("main", {
 
         // 有重複就取得原 node 資訊
         if (repeatNodeType) {
+          console.log(ownNode);
+          // 有重複又是最後一階, 就把字串更新上去
+          this.nodes[`${ownNode[0].nid}`].text = updatePairValInNode();
+
           console.log(`
               id 為 --------------- ${currVal}
               自己的隨機 nid 為 -------  ${nid}
@@ -531,7 +479,7 @@ export const useStore = defineStore("main", {
           nid: parentKeys[Number(index)],
           id: nodeInfo[0].id,
           parentId: nodeInfo.length > 0 ? nodeInfo[0].parentId : "",
-          text: "", // parentKeys[index].text
+          text: nodeInfo[0].text, // parentKeys[index].text
           children: childrenInfo,
         };
         return newItem;
