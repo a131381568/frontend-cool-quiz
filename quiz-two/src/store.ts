@@ -67,6 +67,38 @@ export const useStore = defineStore("main", {
       //   pairKey: "asffff.ttt.header.last.creator",
       //   pairVal: "hhhhhhhhhhhhhhhhhhhh",
       // },
+      {
+        pairKey: "wfdqfewf.tttt.yyyy",
+        pairVal: "111",
+      },
+      {
+        pairKey: "wfdqfewf.tttt.yyyy",
+        pairVal: "222",
+      },
+      {
+        pairKey: "eeee.oooo.ggg",
+        pairVal: "333",
+      },
+      {
+        pairKey: "eeee.oooo.ggg.w00",
+        pairVal: "444",
+      },
+      {
+        pairKey: "regregreg.tttt.yyyy.ttt",
+        pairVal: "5555",
+      },
+      {
+        pairKey: "a.b.c.d.e",
+        pairVal: "6666",
+      },
+      {
+        pairKey: "wfdqfewf.tttt.yyyy.wwww",
+        pairVal: "7777777777",
+      },
+      {
+        pairKey: "regregreg.tttt.wwww",
+        pairVal: "8888888888",
+      },
     ],
     lockBtn: false,
   }),
@@ -92,81 +124,97 @@ export const useStore = defineStore("main", {
       const nodeArrayByOriId = nodeArray.map((item) => item.id);
       const parentKeys = Object.keys(this.childrenOf);
       const parentValues = Object.values(this.childrenOf);
-      let prevNid = "";
-      // console.log("當下全部 nodeId: ", nodeArrayByOriId);
-      // console.log("parentKeys: ", parentKeys);
-      // console.log("parentValues: ", parentValues);
+      // let prevNid = "";
+      console.log("當下全部 nodeId: ", nodeArrayByOriId);
+      console.log("parentKeys: ", parentKeys);
+      console.log("parentValues: ", parentValues);
 
       // 組合二維陣列
       nodeList.reduce((prev, currVal, currIndex, oriArray) => {
         const nid = "n-" + this.genNonDuplicateID(5);
+        let rootRepeat = false;
+        let ownRepeat = false;
         let repeatNodeType = false;
-        let prevId = "";
-        // 先判斷是否有重複的 node
-        const repeatNodeId = nodeArrayByOriId.indexOf(currVal);
-        // console.log("nodeArrayByOriId: ", nodeArrayByOriId);
+        let multipleRepeatType = 0;
 
-        // 有重複就取得原 node 資訊
-        if (repeatNodeId >= 0) {
-          // 可能會同時有三個以上重複, 全都要檢查
-          const totalRepeatGroup = nodeArray.filter(
-            (item) => item.id === currVal
-          );
-
-          if (currIndex === 0) {
-            // 如果是陣列中第一位重複, 就判斷是不是上層為""
-            const checkInclude = totalRepeatGroup.some(
-              (item) => item.parentId === ""
-            );
-            // 跟自己一樣名稱又上層為"", 視為同一個 node
-            if (checkInclude) {
-              repeatNodeType = true;
-              // console.log("第一輪重複 key = " + currVal);
-            }
-          } else {
-            // 不是第一位, 就要判斷 parentId 是否相同
-            const repeatNodeInfo = nodeArray[Number(repeatNodeId)];
-            prevId = oriArray[currIndex - 1];
-            const prevNidOrder = nodeArrayByOriId.indexOf(prevId);
-            prevNid = parentKeys[Number(prevNidOrder)];
-            ///////////////////////////////////////////////////
-            // 可能會同時有三個以上重複, 全都要檢查
-            const checkInclude = totalRepeatGroup.some(
-              (item) => item.parentId === prevNid
-            );
-            /////////////////////////////////////////////
-            // console.log("repeatNodeId: ", currVal);
-            // console.log("repeatNid: ", repeatNodeInfo.nid);
-            // console.log(
-            //   "repeatParentId ( 重複的上層 Nid ) : ",
-            //   repeatNodeInfo.parentId
-            // );
-            // console.log(prevId);
-            // console.log(nodeArrayByOriId);
-            // console.log("( 自己目前的上層 Nid ) prevNid: ", prevNid);
-            // 重複模式
-            repeatNodeType = true;
-            // 重複的 ndoe, 它們的 parentId 需相同才符合重複規則
-            if (!checkInclude) {
-              // console.log(currVal, "不是真正的重複");
-              repeatNodeType = false;
-            }
-          }
-
-          ///////////////////////////////////////////////////
+        // 先判斷頂層是否為重複的 node
+        const findrootNode = nodeArray.filter(
+          (node) => node.id === oriArray[0]
+        );
+        if (findrootNode.length > 0) {
+          console.log(`
+          目前同階頂層 id :  ${oriArray[0]}
+          目前同階頂層 Nid:  ${findrootNode[0].nid}
+          `);
+          rootRepeat = true;
         } else {
-          // 不重複
-          // this.childrenOf[`${prev}`].push(nid);
-          // console.log("noRepeatNodeId: ", currVal);
-          repeatNodeType = false;
-          // 如果 parentId 和 id 相同就覆蓋
-          ///////////////////////////////////////////////////
-          // console.log("oriArray: ", oriArray);
-          // console.log("currVal: ", currVal);
-          ////////////////////////////////////////////////////////////
+          console.log(`
+          目前同階頂層 id :  ${oriArray[0]}
+          目前同階頂層 Nid:  找不到
+          `);
+          rootRepeat = false;
         }
 
-        if (repeatNodeType === false) {
+        // 再判斷自己目前有沒有重複
+        const ownNode = nodeArray.filter((node) => node.id === currVal);
+        console.log("重複群組: ", ownNode);
+
+        if (ownNode.length > 0) {
+          console.log(`
+          目前自己的 id :  ${currVal}
+          目前自己的 Nid ( 不確定, 有可能重複 ):  ${ownNode[0].nid}
+          `);
+          ownRepeat = true;
+        } else {
+          console.log(`
+          目前自己的 id :  ${currVal}
+          目前自己的 Nid:  找不到
+          `);
+          ownRepeat = false;
+        }
+
+        if (rootRepeat && ownRepeat) {
+          // 頂層重複 + 自己重複
+          repeatNodeType = true;
+          multipleRepeatType = 1;
+        } else if (rootRepeat && !ownRepeat) {
+          // 頂層重複 + 自己不重複
+          repeatNodeType = false;
+          multipleRepeatType = 2;
+        } else if (!rootRepeat && ownRepeat) {
+          // 頂層不重複 + 自己重複
+          repeatNodeType = false;
+          multipleRepeatType = 3;
+        } else if (!rootRepeat && !ownRepeat) {
+          // 頂層不重複 + 自己不重複
+          repeatNodeType = false;
+          multipleRepeatType = 4;
+        }
+
+        // if (repeatNodeType === false) {
+        //   // 全部節點
+        //   this.nodes[`${nid}`] = {
+        //     nid: nid,
+        //     id: currVal,
+        //     parentId: prev,
+        //     text: "I am " + currVal,
+        //     children: [],
+        //   };
+
+        //   // 父階層, 先製作空陣列
+        //   if (!Object.prototype.hasOwnProperty.call(this.childrenOf, nid)) {
+        //     this.childrenOf[`${nid}`] = [];
+        //   }
+        //   if (
+        //     prev &&
+        //     Object.prototype.hasOwnProperty.call(this.childrenOf, prev)
+        //   ) {
+        //     this.childrenOf[`${prev}`].push(nid);
+        //   }
+        // }
+
+        // 新增 node + childOf 函式
+        const setNodesAndChildOf = () => {
           // 全部節點
           this.nodes[`${nid}`] = {
             nid: nid,
@@ -186,23 +234,14 @@ export const useStore = defineStore("main", {
           ) {
             this.childrenOf[`${prev}`].push(nid);
           }
-        }
+        };
 
-        // currIndex > 0 && nodeArrayByOriId.length > 0 && repeatNodeType
+        // 有重複就取得原 node 資訊
         if (repeatNodeType) {
-          /////////////////////
-          // console.log("上面-prevNid: ", prevNid);
-          // console.log(`
-          //     id 為 --------------- ${currVal}
-          //     自己的 nid 為 -------  ${nid}
-          //     上層 id 為 ----------- ${prevId}
-          //     上層的 nid 為 -------  ${prevNid}
-          // `);
-          ///////////////////
-          //   console.log(currVal + "--- 回傳上層 nid? :" + prevNid);
-          //   // 回傳上層 nid?
-          //   return prevNid;
-
+          console.log(`
+              id 為 --------------- ${currVal}
+              自己的隨機 nid 為 -------  ${nid}
+          `);
           if (currIndex === 0) {
             // 回傳重複的第一位的 nid
             let floorOneNid = nid;
@@ -214,14 +253,82 @@ export const useStore = defineStore("main", {
             }
             return floorOneNid;
           } else {
-            // 回傳自己的 nid
-            const repeatOwnOrder = nodeArrayByOriId.indexOf(currVal);
-            const repeatNodeInfo = nodeArray[Number(repeatOwnOrder)];
-            const repeatOwnNid = repeatNodeInfo.nid;
-            return repeatOwnNid;
+            if (
+              multipleRepeatType === 0 ||
+              multipleRepeatType === 2 ||
+              multipleRepeatType === 4
+            ) {
+              // 頂層重複 + 自己不重複 || 頂層不重複 + 自己不重複
+              return nid;
+            } else if (multipleRepeatType === 1 || multipleRepeatType === 3) {
+              // 頂層重複 + 自己重複 || 頂層不重複 + 自己重複
+              // 重複, 回傳重複的 nid
+
+              const findFirstNid: any = (item: nodeUnitValueType) => {
+                const onlyParentId = item.parentId;
+                if (onlyParentId) {
+                  const findParentNode = nodeArray.filter(
+                    (node) => node.nid === onlyParentId
+                  );
+                  return findFirstNid(findParentNode[0]);
+                } else {
+                  return item.nid;
+                }
+              };
+
+              console.log("ownNode: ", ownNode);
+              console.log("頂層 nid: ", findrootNode[0].nid);
+              let realOwnNodeInfo: nodeUnitValueType = {
+                nid: "",
+                id: "",
+                parentId: "",
+                text: "",
+                children: [],
+              };
+              if (ownNode.length === 0) {
+                return nid;
+              } else {
+                ownNode.forEach((element) => {
+                  // 前後值
+                  // 頂層
+                  if (findrootNode[0].nid === findFirstNid(element)) {
+                    realOwnNodeInfo = element;
+                  }
+                  console.log(findFirstNid(element));
+                });
+                // 此為查詢到上下, 其他階層相同的 nid
+                // 如果要查詢左右, 則是要判斷 parentId 是否相同
+                console.log("realOwnNodeInfo: ", realOwnNodeInfo);
+                console.log("oriArray: ", oriArray);
+                if (realOwnNodeInfo.id) {
+                  const ownParentId = oriArray[currIndex - 1];
+                  const searchParentId =
+                    this.nodes[`${realOwnNodeInfo.parentId}`].id;
+                  console.log("ownParentId: ", ownParentId);
+                  console.log("searchParentId: ", searchParentId);
+                  if (ownParentId === searchParentId) {
+                    console.log("回傳 realOwnNodeInfo: ", realOwnNodeInfo.nid);
+                    return realOwnNodeInfo.nid;
+                  } else {
+                    console.log("新增 nid: ", nid);
+                    return nid;
+                  }
+                } else {
+                  // id 相同 + nid 不相同, 此判斷為左右重複, 需新增節點
+                  // 設置對照表
+                  setNodesAndChildOf();
+                  return nid;
+                }
+              }
+            } else {
+              // 預設不重複, 回傳 nid
+              console.log("預設不重複, 回傳 nid");
+              return nid;
+            }
           }
         } else {
-          // console.log("下面-nid: ", nid);
+          // 設置對照表
+          setNodesAndChildOf();
           return nid;
         }
       }, "");
@@ -234,17 +341,8 @@ export const useStore = defineStore("main", {
       });
     },
     removeSecDimensionItem(pairKey: string, order: number) {
-      console.log(order);
       // 刪除輸入欄
-      // const sdList = this.secDimensionList.filter(
-      //   (item) => item.pairKey !== pairKey
-      // );
-      // this.secDimensionList = sdList;
-
       this.secDimensionList.splice(order, 1);
-
-      // 初始化
-      // this.initSecDimension();
       ////////////////////////////////////
       // const splitStr = pairKey.split(".");
       // const nodeArray = Object.values(this.nodes);

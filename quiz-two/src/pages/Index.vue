@@ -4,7 +4,7 @@ div.page-header
 div.container
   div.left-col
     <hr>
-    SecDimensioInput(:textSplit="pair" :order="Number(index)" v-for="(pair,index) in store.secDimensionList" :key="index")
+    SecDimensioInput(:textSplit="pair" :order="index" v-for="(pair,index) in store.secDimensionList" :key="index")
   TreeCompView.right-col(:treeData="secDimensionTree")
 </template>
 <script setup lang="ts">
@@ -29,12 +29,18 @@ watchDebounced(
   secDimensionArray.value,
   (newVal) => {
     console.log("觸發監聽");
-    if (!newVal[newVal.length - 1].pairKey) {
-      console.log("沒值");
+    if (newVal.length === 0) {
+      console.log("無資料");
+      store.nodes = {};
+      store.childrenOf = {};
     } else {
-      console.log("有值");
-      // 組成二維振烈
-      store.initSecDimension();
+      if (!newVal[newVal.length - 1].pairKey) {
+        console.log("沒值");
+      } else {
+        console.log("有值");
+        // 組成二維陣列
+        store.initSecDimension();
+      }
     }
   },
   { debounce: 1000 }

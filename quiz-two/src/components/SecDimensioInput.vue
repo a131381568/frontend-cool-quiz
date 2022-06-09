@@ -18,11 +18,7 @@ const props = defineProps<{
       pairVal: "";
     };
   };
-  order: {
-    type: number;
-    required: false;
-    default: 0;
-  };
+  order: number;
 }>();
 const { textSplit, order } = toRefs(props);
 const emit = defineEmits(["update:textSplit"]);
