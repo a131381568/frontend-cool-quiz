@@ -1,9 +1,11 @@
 # Quiz 2 - Nested Key-Value Pair Tree Viewer
 
-Demo 連結:[http://test](http://test)
+Demo 連結:[https://dev.puraliena.com/](https://dev.puraliena.com/)
 
 
-## 製作筆記
+## 一、問題敘述與解決
+
+### A. 資料結構 CRCD 問題
 
 1. 先想好階層，定義資料欄位。
 
@@ -17,13 +19,25 @@ Demo 連結:[http://test](http://test)
 - 子層則只需要管好自己的值
 nodes.
 
+### B. 效能瓶頸
 
 
+## 二、文件說明
+
+## A. 組件架構圖
+![tree-architecture](https://raw.githubusercontent.com/a131381568/frontend-cool-quiz/main/quiz-two/doc/tree-architecture.jpg)
+
+## B. 邏輯圖
+...
+
+## 三、其它說明
+
+- SCSS 管理 - /src/assets/scss
+- 型別管理 - /type/types
 
 
 ## 本機運行
-
- 安裝 NPM 依賴並運行。
+安裝 NPM 依賴並運行。
 ```shell
 npm install
 npm run dev
