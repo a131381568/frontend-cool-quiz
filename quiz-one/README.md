@@ -30,13 +30,16 @@ Demo 連結: [https://project.puraliena.com/](https://project.puraliena.com/)
 ## 二、文件說明
 
 
-### A. 架構與邏輯說明
+### A. 圖表說明
 
 #### 1. 組件路由架構圖
 ![architecture](https://raw.githubusercontent.com/a131381568/frontend-cool-quiz/main/quiz-one/doc/architecture.jpg)
 
 #### 2. 邏輯說明圖
-![logic](https://raw.githubusercontent.com/a131381568/frontend-cool-quiz/main/quiz-one/doc/logic.jpg)
+![logic](https://raw.githubusercontent.com/a131381568/frontend-cool-quiz/main/quiz-one/doc/logic2.jpg)
+
+#### 3. Firebase 集合
+![firebasedata](https://raw.githubusercontent.com/a131381568/frontend-cool-quiz/main/quiz-one/doc/firebasedata.gif)
 
 
 ### B. 功能測試案例
@@ -155,13 +158,13 @@ Demo 連結: [https://project.puraliena.com/](https://project.puraliena.com/)
   - 無權限強制轉跳登入頁 ( public 判斷 ) - /src/router
 - 針對使用者瀏覽器開多分頁，後續的非同步操作行為，暫存資料的讀取判斷
 - 全部環境變數說明 ( .env.development / .env.production )：
-  - `VITE_APP_API_KEY` - Firebase 參數
-  - `VITE_APP_AUTH_DOMAIN` - Firebase 參數
-  - `VITE_APP_PROJECT_ID` - Firebase 參數
-  - `VITE_APP_STORAGEBUCKET` - Firebase 參數
-  - `VITE_APP_MESSAGINGSENDERID` - Firebase 參數
-  - `VITE_APP_APPID` - Firebase 參數
-  - `VITE_APP_FIREBASE_COLLECTION` - Firebase 參數
+  - `VITE_APP_API_KEY` - 連結 Firebase 資料庫參數
+  - `VITE_APP_AUTH_DOMAIN` - 連結 Firebase 資料庫參數
+  - `VITE_APP_PROJECT_ID` - 連結 Firebase 資料庫參數
+  - `VITE_APP_STORAGEBUCKET` - 連結 Firebase 資料庫參數
+  - `VITE_APP_MESSAGINGSENDERID` - 連結 Firebase 資料庫參數
+  - `VITE_APP_APPID` - 連結 Firebase 資料庫參數
+  - `VITE_APP_FIREBASE_COLLECTION` - Firebase 集合物件
   - `VITE_APP_SALTROUNDS` - 密碼加密次數
   - `VITE_APP_API_PATH` - API 網域 ( ex: https://randomuser.me )
 

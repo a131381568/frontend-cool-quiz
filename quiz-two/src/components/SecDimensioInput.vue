@@ -46,6 +46,6 @@ const rmPairInput = async () => {
   await store.removeSecDimensionItem(textSplitArray.value, Number(order.value));
   await setTimeout(() => {
     store.setLockBtnClose();
-  }, 1000);
+  }, 2000);
 };
 </script>

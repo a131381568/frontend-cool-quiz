@@ -7,7 +7,7 @@ div.container
     TreeCompView(:treeData="secDimensionTree")
 </template>
 <script setup lang="ts">
-import { watchDebounced, useDebounceFn } from "@vueuse/core";
+import { watchDebounced } from "@vueuse/core";
 const router = useRouter();
 const store = useStore();
 
@@ -51,7 +51,7 @@ const addPairInput = async () => {
   await store.addSecDimensionItem();
   await setTimeout(() => {
     store.setLockBtnClose();
-  }, 1000);
+  }, 2000);
 };
 
 // 初始化

@@ -62,24 +62,26 @@ html {
         @include phone-w() {
           padding: 2rem;
         }
-        & > .tree-component {
-          margin: 0;
-          & > .accordion-header {
-            display: none;
+        & > .tree-component-container {
+          & > .tree-component {
             margin: 0;
-            padding: 0;
-            & > .accordion-toggle-btn {
+            & > .accordion-header {
               display: none;
               margin: 0;
               padding: 0;
+              & > .accordion-toggle-btn {
+                display: none;
+                margin: 0;
+                padding: 0;
+              }
             }
-          }
-          & > .accordion-content {
-            display: none;
-          }
-          & > .tree-component-container {
-            & > .tree-component {
-              margin: 0;
+            & > .accordion-content {
+              display: none;
+            }
+            & > .tree-component-container {
+              & > .tree-component {
+                margin: 0;
+              }
             }
           }
         }
