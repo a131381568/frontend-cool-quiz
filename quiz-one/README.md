@@ -36,7 +36,7 @@ Demo 連結: [https://project.puraliena.com/](https://project.puraliena.com/)
 ![architecture](https://raw.githubusercontent.com/a131381568/frontend-cool-quiz/main/quiz-one/doc/architecture.jpg)
 
 #### 2. 邏輯說明圖
-![logic](https://raw.githubusercontent.com/a131381568/frontend-cool-quiz/main/quiz-one/doc/logic2.jpg)
+![logic](https://raw.githubusercontent.com/a131381568/frontend-cool-quiz/main/quiz-one/doc/logic-2.jpg)
 
 #### 3. Firebase 集合
 ![firebasedata](https://raw.githubusercontent.com/a131381568/frontend-cool-quiz/main/quiz-one/doc/firebasedata.gif)
