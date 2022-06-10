@@ -9,7 +9,7 @@ div.tree-component-container(v-if="treeDataOri")
         RemoveIcon.remove-icon(v-show="accordionBtn")
     div.accordion-content
       span.content.pair-val {{ treeDataOri.text }}
-    TreeCompView(v-for="value in treeDataChild" :treeData="value")
+    TreeCompView(v-if="treeDataOri.children.length > 0" v-for="value in treeDataChild" :treeData="value")
 </template>
 <script setup lang="ts">
 interface LooseObject {

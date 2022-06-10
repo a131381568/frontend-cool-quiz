@@ -82,7 +82,7 @@ Demo 連結: [https://dev.puraliena.com/](https://dev.puraliena.com/)
 - 只輸入 KEY 會新增節點
 ![test-4-3](https://raw.githubusercontent.com/a131381568/frontend-cool-quiz/main/quiz-two/doc/test-4-3.jpg)
 - 可刪除
-![test-4-3](https://raw.githubusercontent.com/a131381568/frontend-cool-quiz/main/quiz-two/doc/test-4-3.jpg)
+![test-4-3](https://raw.githubusercontent.com/a131381568/frontend-cool-quiz/main/quiz-two/doc/test-4-4.jpg)
 
 ## 三、其它說明
 
