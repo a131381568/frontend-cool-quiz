@@ -33,7 +33,7 @@
     z-index: 1055;
   }
   .user-content {
-    @apply w-1of4 p-10 bg-slate-300 relative;
+    @apply xl:w-1of4 md:w-1of3 w-11/12 p-10 bg-slate-300 relative;
   }
   .user-content .logo {
     @apply mx-auto rounded-full border mb-6;
@@ -55,7 +55,7 @@
     @apply flex justify-center py-8;
   }
   .connections-content {
-    @apply w-7of12;
+    @apply xl:w-7of12 md:w-3/4 xxs:w-5/6;
   }
   .connections-header {
     @apply flex justify-between pb-8;
@@ -128,6 +128,9 @@
     @apply whitespace-nowrap border-b p-1;
   }
   /* 格狀 */
+  .card-permutation {
+    @apply xl:grid-cols-5 md:grid-cols-3 gap-4 grid-cols-2;
+  }
   .card-mode .grid li img {
     @apply mx-auto border border-solid border-slate-100;
   }
@@ -152,7 +155,7 @@
     @apply flex flex-row h-screen items-center justify-center bg-slate-300;
   }
   .login-form {
-    @apply w-1of5 p-10 bg-slate-800;
+    @apply 2xl:w-1of5 p-10 bg-slate-800 md:w-1of3 xxs:w-5/6;
   }
   .login-from-header {
     @apply h-44 mb-8 text-center;
@@ -247,5 +250,39 @@
   }
   100% {
     transform: translate(24px, 0);
+  }
+}
+
+/*-------------------------------- RWD Table ----------------------------------*/
+
+@media only screen and (max-width: 992px) {
+  table.rwd-table,
+  .rwd-table thead,
+  .rwd-table tbody,
+  .rwd-table th,
+  .rwd-table tr {
+    @apply block;
+  }
+  .rwd-table thead tr {
+    @apply absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+  .rwd-table tr {
+    @apply mb-0 py-4 border-b border-solid border-slate-200;
+  }
+  .rwd-table.rwd-table.rwd-table td {
+    @apply border-0 relative pl-16 py-0 h-8 inline-block leading-8;
+    width: calc(100% - 85px);
+  }
+  .rwd-table td:nth-of-type(n + 1):before {
+    @apply absolute top-0 left-4 w-14 pr-3 whitespace-nowrap font-bold;
+    content: attr(data-label);
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .rwd-table.rwd-table.rwd-table.rwd-table td {
+    @apply w-full overflow-hidden whitespace-nowrap text-ellipsis;
   }
 }

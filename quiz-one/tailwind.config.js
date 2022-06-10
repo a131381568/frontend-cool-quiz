@@ -21,6 +21,9 @@ module.exports = {
       height: {
         '1of3': '33.333333%',
         '1of2': '50%',
+      },
+      screens: {
+        'xxs': { 'max': '767px' },
       }
     },
   },

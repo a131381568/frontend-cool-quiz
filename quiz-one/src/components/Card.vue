@@ -1,6 +1,6 @@
 <template lang="pug">
 div.card-mode
-  ul#nav.grid.grid-cols-5.gap-4
+  ul#nav.card-permutation.grid
     li(v-for="(value,key) in store.get_calculateConnectionsList" :key="key" @click="store.showLightBox(value.email)")
       img(:src="value.picture.large")
       h6 {{ String(value.name.first) +" "+ String(value.name.last) }}

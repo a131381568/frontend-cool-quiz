@@ -30,6 +30,7 @@ class HttpRequest {
     instance.interceptors.request.use(
       (config: AxiosRequestConfig) => {
         // 介面請求的所有配置，都在這個config物件中，他的型別是AxiosRequestConfig，你可以看到他有哪些欄位
+        console.log(config);
         return config;
       },
       (error) => {

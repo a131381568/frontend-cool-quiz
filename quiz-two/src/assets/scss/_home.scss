@@ -23,8 +23,8 @@ html {
       display: flex;
       justify-content: space-between;
       margin: 4rem auto;
-      // 筆電以下
-      @include nb-bottm-w() {
+      //直平板以下的載具
+      @include pads-phone-w() {
         flex-wrap: wrap;
       }
       // 手機以下
@@ -34,8 +34,8 @@ html {
       .left-col {
         width: 50%;
         padding: 4rem;
-        // 筆電以下
-        @include nb-bottm-w() {
+        //直平板以下的載具
+        @include pads-phone-w() {
           width: 100%;
           order: 1;
         }
@@ -49,13 +49,14 @@ html {
         width: 50%;
         padding: 4rem;
         border-width: 0 0 0 1px;
-        // 筆電以下
-        @include nb-bottm-w() {
+        //直平板以下的載具
+        @include pads-phone-w() {
           width: 100%;
           order: 0;
           padding-top: 0;
           border-bottom: 1px solid $main-color;
           border-left: 0;
+          overflow-x: scroll;
         }
         // 手機以下
         @include phone-w() {

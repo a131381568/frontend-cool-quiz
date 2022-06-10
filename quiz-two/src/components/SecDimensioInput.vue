@@ -30,7 +30,7 @@ const keySplitArray: LooseObject = computed({
     return data;
   },
   set: (val) => {
-    console.log(val);
+    // console.log(val);
     emit("update:textSplit", val);
   },
 });

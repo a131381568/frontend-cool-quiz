@@ -25,7 +25,7 @@ div.login-container
         span.from-alert-msg(v-show="errors.password") {{errors.password}}
 </template>
 <script setup lang="ts">
-import { debounce } from "throttle-debounce";
+// import { debounce } from "throttle-debounce";
 import schema from "@/utils/vee-validate-schema";
 import { Field, Form } from "vee-validate";
 const router = useRouter();
