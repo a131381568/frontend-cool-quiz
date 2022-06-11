@@ -400,7 +400,7 @@ export const useStore = defineStore("main", {
         const splitStr = item.pairKey.split(".");
         this.changeSecDimension(splitStr);
       });
-      this.spFloorOneTree = this.buildFloorOneTree();
+      // this.spFloorOneTree = this.buildFloorOneTree();
     },
     setLockBtnOpen() {
       this.lockBtn = true;
@@ -419,10 +419,10 @@ export const useStore = defineStore("main", {
           (node: any) => node.nid === parentKeys[Number(index)]
         );
 
-        const childrenInfo = item.map((chInfo: any) => {
-          const actionNodeKeys: number = nodeKeys.indexOf(chInfo);
-          return actionNodeKeys >= 0 ? nodeArray[Number(actionNodeKeys)] : [];
-        });
+        // const childrenInfo = item.map((chInfo: any) => {
+        //   const actionNodeKeys: number = nodeKeys.indexOf(chInfo);
+        //   return actionNodeKeys >= 0 ? nodeArray[Number(actionNodeKeys)] : [];
+        // });
       });
       console.log(tree);
     },

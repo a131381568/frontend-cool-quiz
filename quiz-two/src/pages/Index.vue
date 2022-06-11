@@ -29,6 +29,7 @@ for (let index = 0; index < addCount; index++) {
   addCountGroup.push(index + 1);
 }
 addCountGroup.reduce((pre, curr, index, array) => {
+  const group: any = store.parentGroup;
   // 子層
   const nid = "n-" + store.genNonDuplicateID(5);
   store.newSpFloorOneTree.push({
@@ -41,10 +42,10 @@ addCountGroup.reduce((pre, curr, index, array) => {
     inputOrder: 0,
     treePosition: [],
   });
-  store.parentGroup[`${nid}`] = [];
+  group[`${nid}`] = [];
   // 父層
   if (pre) {
-    store.parentGroup[`${pre}`].push(nid);
+    group[`${pre}`].push(nid);
   }
   return nid;
 }, "");
