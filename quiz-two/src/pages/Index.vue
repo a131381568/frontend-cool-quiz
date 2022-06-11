@@ -1,7 +1,8 @@
 <template lang="pug">
 div.container
   div.left-col
-    SecDimensioInput(:textSplit="pair" :order="index" v-for="(pair,index) in store.secDimensionList" :key="index")
+    //- SecDimensioInput(:textSplit="pair" :order="index" v-for="(pair,index) in store.secDimensionList" :key="index")
+    OnlyOneInput(:textSplit="pair" :order="index" v-for="(pair,index) in Object.values(store.newEnterInput)" :key="index")
     div.add-pair-btn(@click.prevent="addPairInput()" :disabled="store.get_lockBtnState") Add New Pair
   perfect-scrollbar.right-col
     TreeCompView(:treeData="secDimensionTree")
@@ -11,39 +12,80 @@ import { watchDebounced } from "@vueuse/core";
 const router = useRouter();
 const store = useStore();
 
-/////////////////////////////////////////////////////
-
 // 樹狀結構
 const secDimensionTree = computed(() => {
-  return store.get_floorOneTree;
+  // return store.get_floorOneTree;
+  return store.spFloorOneTree;
 });
 
-// 輸入欄
+// 原始資料反推回來陣列 (初始化)
 const secDimensionArray = computed(() => {
-  return store.secDimensionList;
+  return store.newEnterInput;
 });
+
+const addCountGroup = [];
+const addCount = 10;
+for (let index = 0; index < addCount; index++) {
+  addCountGroup.push(index + 1);
+}
+addCountGroup.reduce((pre, curr, index, array) => {
+  // 子層
+  const nid = "n-" + store.genNonDuplicateID(5);
+  store.newSpFloorOneTree.push({
+    nid: nid,
+    key: "",
+    value: "",
+    parentNid: pre,
+    childNidGroup: [],
+    inputFloor: 0,
+    inputOrder: 0,
+    treePosition: [],
+  });
+  store.parentGroup[`${nid}`] = [];
+  // 父層
+  if (pre) {
+    store.parentGroup[`${pre}`].push(nid);
+  }
+  return nid;
+}, "");
+
+// const aaa = computed(() => {
+//   const bbb: any = [];
+//   const maxFloorNum = Math.max(
+//     ...store.newSpFloorOneTree.map((item) => item.inputFloor)
+//   );
+//   console.log(...store.newSpFloorOneTree);
+//   console.log(maxFloorNum);
+//   for (let index = 0; index < 1 + maxFloorNum; index++) {
+//     const ccc = store.newSpFloorOneTree.filter(
+//       (item) => item.inputFloor === index
+//     );
+//     bbb.push(ccc);
+//   }
+//   return bbb;
+// });
 
 // 監聽輸入欄更改事件
-watchDebounced(
-  secDimensionArray.value,
-  (newVal) => {
-    // console.log("觸發監聽");
-    if (newVal.length === 0) {
-      // console.log("無資料");
-      store.nodes = {};
-      store.childrenOf = {};
-    } else {
-      if (!newVal[newVal.length - 1].pairKey) {
-        // console.log("沒值");
-      } else {
-        // console.log("有值");
-        // 組成二維陣列
-        store.initSecDimension();
-      }
-    }
-  },
-  { debounce: 1000 }
-);
+// watchDebounced(
+//   secDimensionArray.value,
+//   (newVal, oldVal) => {
+//     console.log(newVal, oldVal);
+
+//     // console.log("觸發監聽");
+//     if (newVal.length === 0) {
+//       // console.log("無資料");
+//       store.nodes = {};
+//       store.childrenOf = {};
+//     } else {
+//       if (!newVal[newVal.length - 1].pairKey) {
+//         // console.log("沒值");
+//       } else {
+//         // console.log("有值");
+//       }
+//     }
+//   },
+//   { debounce: 1000 }
+// );
 
 // 新增事件
 const addPairInput = async () => {
@@ -51,7 +93,7 @@ const addPairInput = async () => {
   await store.addSecDimensionItem();
   await setTimeout(() => {
     store.setLockBtnClose();
-  }, 2000);
+  }, 1000);
 };
 
 // 初始化

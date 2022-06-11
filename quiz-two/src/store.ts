@@ -41,6 +41,75 @@ export const useStore = defineStore("main", {
       },
     ],
     lockBtn: false,
+    spFloorOneTree: {
+      nid: "",
+      id: "root",
+      parentId: "",
+      text: "",
+      children: [],
+    },
+    parentGroup: {
+      aaa: ["bbb"],
+      bbb: ["ccc"],
+      ccc: [],
+      ddd: [],
+    },
+    newSpFloorOneTree: [
+      {
+        nid: "aaa",
+        key: "nav",
+        value: "",
+        parentNid: "",
+        childNidGroup: ["bbb"],
+        inputFloor: 0,
+        inputOrder: 0,
+        treePosition: [0],
+      },
+      {
+        nid: "bbb",
+        key: "header",
+        value: "",
+        parentNid: "aaa",
+        childNidGroup: ["ccc"],
+        inputFloor: 0,
+        inputOrder: 1,
+        treePosition: [0, 0],
+      },
+      {
+        nid: "ccc",
+        key: "nav",
+        value: "3D Fabric Creator",
+        parentNid: "bbb",
+        childNidGroup: [],
+        inputFloor: 0,
+        inputOrder: 2,
+        treePosition: [0, 0, 0],
+      },
+      {
+        nid: "ddd",
+        key: "common",
+        value: "Choose Fabric",
+        parentNid: "",
+        childNidGroup: [],
+        inputFloor: 1,
+        inputOrder: 0,
+        treePosition: [1],
+      },
+    ],
+    newEnterInput: [
+      // {
+      //   pairKey: "nav.header.creator",
+      //   pairVal: "3D Fabric Creator",
+      // },
+      // {
+      //   pairKey: "common",
+      //   pairVal: "Choose Fabric",
+      // },
+      {
+        pairKey: "",
+        pairVal: "",
+      },
+    ],
   }),
   actions: {
     getArraySameResult(a1: string[], a2: string[]) {
@@ -61,10 +130,6 @@ export const useStore = defineStore("main", {
       const nodeArrayByOriId = nodeArray.map((item) => item.id);
       const parentKeys = Object.keys(this.childrenOf);
       const parentValues = Object.values(this.childrenOf);
-      // let prevNid = "";
-      // console.log("當下全部 nodeId: ", nodeArrayByOriId);
-      // console.log("parentKeys: ", parentKeys);
-      // console.log("parentValues: ", parentValues);
 
       // 組合二維陣列
       nodeList.reduce((prev, currVal, currIndex, oriArray) => {
@@ -79,16 +144,8 @@ export const useStore = defineStore("main", {
           (node) => node.id === oriArray[0]
         );
         if (findrootNode.length > 0) {
-          // console.log(`
-          // 目前同階頂層 id :  ${oriArray[0]}
-          // 目前同階頂層 Nid:  ${findrootNode[0].nid}
-          // `);
           rootRepeat = true;
         } else {
-          // console.log(`
-          // 目前同階頂層 id :  ${oriArray[0]}
-          // 目前同階頂層 Nid:  找不到
-          // `);
           rootRepeat = false;
         }
 
@@ -97,16 +154,8 @@ export const useStore = defineStore("main", {
         // console.log("重複群組: ", ownNode);
 
         if (ownNode.length > 0) {
-          // console.log(`
-          // 目前自己的 id :  ${currVal}
-          // 目前自己的 Nid ( 不確定, 有可能重複 ):  ${ownNode[0].nid}
-          // `);
           ownRepeat = true;
         } else {
-          // console.log(`
-          // 目前自己的 id :  ${currVal}
-          // 目前自己的 Nid:  找不到
-          // `);
           ownRepeat = false;
         }
 
@@ -131,11 +180,6 @@ export const useStore = defineStore("main", {
         // 更新字串函式
         const updatePairValInNode = () => {
           let textContent = "";
-          // console.log(
-          //   "如果是最後一輪則加上 text: ",
-          //   currIndex,
-          //   oriArray.length
-          // );
           if (currIndex + 1 === oriArray.length) {
             const filterContent = this.secDimensionList.filter(
               (item) => item.pairKey === oriArray.join(".")
@@ -172,11 +216,6 @@ export const useStore = defineStore("main", {
 
         // 有重複就取得原 node 資訊
         if (repeatNodeType) {
-          // console.log(ownNode);
-          // console.log(`
-          //     id 為 --------------- ${currVal}
-          //     自己的隨機 nid 為 -------  ${nid}
-          // `);
           if (currIndex === 0) {
             // 回傳重複的第一位的 nid
             let floorOneNid = nid;
@@ -195,16 +234,10 @@ export const useStore = defineStore("main", {
               multipleRepeatType === 2 ||
               multipleRepeatType === 4
             ) {
-              // 頂層重複 + 自己不重複 || 頂層不重複 + 自己不重複
-              // 有重複又是最後一階, 就把字串更新上去
-              // if (Object.prototype.hasOwnProperty.call(this.nodes, nid)) {
-              //   this.nodes[`${nid}`].text = updatePairValInNode();
-              // }
               return nid;
             } else if (multipleRepeatType === 1 || multipleRepeatType === 3) {
               // 頂層重複 + 自己重複 || 頂層不重複 + 自己重複
               // 重複, 回傳重複的 nid
-
               const findFirstNid: any = (item: nodeUnitValueType) => {
                 const onlyParentId = item.parentId;
                 if (onlyParentId) {
@@ -216,9 +249,6 @@ export const useStore = defineStore("main", {
                   return item.nid;
                 }
               };
-
-              // console.log("ownNode: ", ownNode);
-              // console.log("頂層 nid: ", findrootNode[0].nid);
               let realOwnNodeInfo: nodeUnitValueType = {
                 nid: "",
                 id: "",
@@ -230,25 +260,18 @@ export const useStore = defineStore("main", {
                 return nid;
               } else {
                 ownNode.forEach((element) => {
-                  // 前後值
-                  // 頂層
+                  // 前後值, 頂層
                   if (findrootNode[0].nid === findFirstNid(element)) {
                     realOwnNodeInfo = element;
                   }
-                  // console.log(findFirstNid(element));
                 });
                 // 此為查詢到上下, 其他階層相同的 nid
                 // 如果要查詢左右, 則是要判斷 parentId 是否相同
-                // console.log("realOwnNodeInfo: ", realOwnNodeInfo);
-                // console.log("oriArray: ", oriArray);
                 if (realOwnNodeInfo.id && realOwnNodeInfo.parentId) {
                   const ownParentId = oriArray[currIndex - 1];
                   const searchParentId =
                     this.nodes[`${realOwnNodeInfo.parentId}`].id;
-                  // console.log("ownParentId: ", ownParentId);
-                  // console.log("searchParentId: ", searchParentId);
                   if (ownParentId === searchParentId) {
-                    // console.log("回傳 realOwnNodeInfo: ", realOwnNodeInfo.nid);
                     // 有重複又是最後一階, 就把字串更新上去
                     if (
                       Object.prototype.hasOwnProperty.call(
@@ -262,11 +285,6 @@ export const useStore = defineStore("main", {
                     // 回傳真正的 nid
                     return realOwnNodeInfo.nid;
                   } else {
-                    // console.log("新增 nid: ", nid);
-                    // 有重複又是最後一階, 就把字串更新上去
-                    // if (Object.prototype.hasOwnProperty.call(this.nodes, nid)) {
-                    //   this.nodes[`${nid}`].text = updatePairValInNode();
-                    // }
                     return nid;
                   }
                 } else {
@@ -278,11 +296,6 @@ export const useStore = defineStore("main", {
               }
             } else {
               // 預設不重複, 回傳 nid
-              // 有重複又是最後一階, 就把字串更新上去
-              // if (Object.prototype.hasOwnProperty.call(this.nodes, nid)) {
-              //   this.nodes[`${nid}`].text = updatePairValInNode();
-              // }
-              // console.log("預設不重複, 回傳 nid");
               return nid;
             }
           }
@@ -387,12 +400,31 @@ export const useStore = defineStore("main", {
         const splitStr = item.pairKey.split(".");
         this.changeSecDimension(splitStr);
       });
+      this.spFloorOneTree = this.buildFloorOneTree();
     },
     setLockBtnOpen() {
       this.lockBtn = true;
     },
     setLockBtnClose() {
       this.lockBtn = false;
+    },
+    buildFloorOneTree() {
+      const nodeArray = Object.values(this.newSpFloorOneTree);
+      // const nodeKeys = Object.keys(state.nodes);
+      const parentKeys = Object.keys(this.parentGroup);
+      const parentValues = Object.values(this.parentGroup);
+
+      const tree = parentValues.map((item, index) => {
+        const nodeInfo = this.newSpFloorOneTree.filter(
+          (node: any) => node.nid === parentKeys[Number(index)]
+        );
+
+        const childrenInfo = item.map((chInfo: any) => {
+          const actionNodeKeys: number = nodeKeys.indexOf(chInfo);
+          return actionNodeKeys >= 0 ? nodeArray[Number(actionNodeKeys)] : [];
+        });
+      });
+      console.log(tree);
     },
   },
   getters: {
@@ -475,6 +507,9 @@ export const useStore = defineStore("main", {
     },
     get_secDimensionList(state) {
       return state.secDimensionList;
+    },
+    get_newSpFloorOneTreeObj: (state) => {
+      return state.spFloorOneTree;
     },
   },
 });

@@ -12,6 +12,7 @@ div.tree-component-container(v-if="treeDataOri")
     TreeCompView(v-if="treeDataOri.children.length > 0" v-for="value in treeDataChild" :treeData="value")
 </template>
 <script setup lang="ts">
+import { watchDebounced } from "@vueuse/core";
 interface LooseObject {
   [key: string]: any;
 }
@@ -55,4 +56,13 @@ const accordionBtn = ref<boolean>(true);
 const toggleAccordionBtn = () => {
   accordionBtn.value = !accordionBtn.value;
 };
+
+// 監聽輸入欄更改事件
+watchDebounced(
+  treeData,
+  (newVal, oldVal) => {
+    console.log(newVal, oldVal);
+  },
+  { debounce: 1000 }
+);
 </script>
