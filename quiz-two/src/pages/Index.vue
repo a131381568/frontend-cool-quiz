@@ -1,11 +1,10 @@
 <template lang="pug">
 div.container
   div.left-col
-    //- SecDimensioInput(:textSplit="pair" :order="index" v-for="(pair,index) in store.secDimensionList" :key="index")
     OnlyOneInput(:textSplit="pair" :order="index" v-for="(pair,index) in Object.values(store.newEnterInput)" :key="index")
     div.add-pair-btn(@click.prevent="addPairInput()" :disabled="store.get_lockBtnState") Add New Pair
   perfect-scrollbar.right-col
-    TreeCompView(:treeData="secDimensionTree")
+    TreeCompView(:treeData="store.get_newSpFloorOneTreeObj")
 </template>
 <script setup lang="ts">
 import { watchDebounced } from "@vueuse/core";
@@ -37,10 +36,9 @@ addCountGroup.reduce((pre, curr, index, array) => {
     key: "",
     value: "",
     parentNid: pre,
-    childNidGroup: [],
     inputFloor: 0,
     inputOrder: 0,
-    treePosition: [],
+    children: [],
   });
   group[`${nid}`] = [];
   // 父層
@@ -91,12 +89,10 @@ addCountGroup.reduce((pre, curr, index, array) => {
 // 新增事件
 const addPairInput = async () => {
   await store.setLockBtnOpen();
-  await store.addSecDimensionItem();
   await setTimeout(() => {
     store.setLockBtnClose();
   }, 1000);
 };
 
-// 初始化
-store.initSecDimension();
+//////////////////////////////////////////
 </script>

@@ -2,7 +2,7 @@
 div.sec-dimensio-input
   input.import-pair-key(type="text" v-model.trim="keySplitArray.pairKey")
   input.import-pair-val(type="text" v-model.trim="keySplitArray.pairVal")
-  div.close-icon(@click.prevent="rmPairInput()" :disabled="store.get_lockBtnState")
+  div.close-icon(:disabled="store.get_lockBtnState")
     CloseIcon
 </template>
 <script setup lang="ts">
@@ -40,15 +40,6 @@ const textSplitArray: LooseObject = computed(() => {
   const data: LooseObject = textSplit.value;
   return data.pairKey.split(".");
 });
-
-// 刪除事件
-const rmPairInput = async () => {
-  await store.setLockBtnOpen();
-  await store.removeSecDimensionItem(textSplitArray.value, Number(order.value));
-  await setTimeout(() => {
-    store.setLockBtnClose();
-  }, 1000);
-};
 
 // 監聽輸入欄更改事件
 watchDebounced(

@@ -2,13 +2,13 @@
 div.tree-component-container(v-if="treeDataOri")
   div.tree-component(:class="[{'content-hide':!accordionBtn},{'content-lock':accordionLock}]")
     div.title.accordion-header
-      div.pair-key {{ treeDataOri.id }}
+      div.pair-key {{ treeDataOri.key }}
       div.accordion-toggle-btn.title-colon(v-show="treeDataOri.children.length === 0 || accordionLock") :
       div.accordion-toggle-btn(v-show="treeDataOri.children.length > 0 && !accordionLock" @click.prevent="toggleAccordionBtn()")
         AddIcon.add-icon(v-show="!accordionBtn")
         RemoveIcon.remove-icon(v-show="accordionBtn")
     div.accordion-content
-      span.content.pair-val {{ treeDataOri.text }}
+      span.content.pair-val {{ treeDataOri.value }}
     TreeCompView(v-if="treeDataOri.children.length > 0" v-for="value in treeDataChild" :treeData="value")
 </template>
 <script setup lang="ts">
@@ -23,9 +23,11 @@ const props = defineProps<{
     required: false;
     default: {
       nid: "";
-      id: "";
-      text: "";
-      parentId: "";
+      key: "";
+      value: "";
+      parentNid: "";
+      inputFloor: null;
+      inputOrder: null;
       children: [];
     };
   };
@@ -34,7 +36,7 @@ const { treeData } = toRefs(props);
 
 const accordionLock = computed(() => {
   const checkChildLen = treeDataChild.value.length > 0;
-  const pairValState = treeDataOri.value.text.length > 0;
+  const pairValState = treeDataOri.value.value.length > 0;
   if (checkChildLen && pairValState) {
     return true;
   } else {
