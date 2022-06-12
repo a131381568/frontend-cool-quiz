@@ -2,13 +2,13 @@
 div.tree-component-container(v-if="treeDataOri")
   div.tree-component(:class="[{'content-hide':!accordionBtn},{'content-lock':accordionLock}]")
     div.title.accordion-header
-      div.pair-key {{ treeDataOri.key }}
+      div.pair-key(v-if="treeDataOri.key") {{ treeDataOri.key }}
       div.accordion-toggle-btn.title-colon(v-show="treeDataOri.children.length === 0 || accordionLock") :
       div.accordion-toggle-btn(v-show="treeDataOri.children.length > 0 && !accordionLock" @click.prevent="toggleAccordionBtn()")
         AddIcon.add-icon(v-show="!accordionBtn")
         RemoveIcon.remove-icon(v-show="accordionBtn")
     div.accordion-content
-      span.content.pair-val {{ treeDataOri.value }}
+      span.content.pair-val(v-if="treeDataOri.value") {{ treeDataOri.value }}
     TreeCompView(v-if="treeDataOri.children.length > 0" v-for="value in treeDataChild" :treeData="value")
 </template>
 <script setup lang="ts">
@@ -60,11 +60,11 @@ const toggleAccordionBtn = () => {
 };
 
 // 監聽輸入欄更改事件
-watchDebounced(
-  treeData,
-  (newVal, oldVal) => {
-    console.log(newVal, oldVal);
-  },
-  { debounce: 1000 }
-);
+// watchDebounced(
+//   treeData,
+//   (newVal, oldVal) => {
+//     console.log(newVal, oldVal);
+//   },
+//   { debounce: 1000 }
+// );
 </script>

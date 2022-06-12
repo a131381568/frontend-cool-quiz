@@ -7,6 +7,7 @@ import {
   childrenUnitType,
   nodeUnitValueType,
 } from "@/type/types";
+import { pushScopeId } from "vue";
 const vm = this;
 export const useStore = defineStore("main", {
   state: () => ({
@@ -19,12 +20,6 @@ export const useStore = defineStore("main", {
       inputFloor: 0,
       inputOrder: 0,
       children: [],
-    },
-    parentGroup: {
-      aaa: ["bbb"],
-      bbb: ["ccc"],
-      ccc: [],
-      ddd: [],
     },
     newSpFloorOneTree: <nodeItem[]>[
       // {
@@ -73,20 +68,7 @@ export const useStore = defineStore("main", {
       //   children: [],
       // },
     ],
-    newEnterInput: <pairInputType[]>[
-      // {
-      //   pairKey: "nav.header.creator",
-      //   pairVal: "3D Fabric Creator",
-      // },
-      // {
-      //   pairKey: "common",
-      //   pairVal: "Choose Fabric",
-      // },
-      {
-        pairKey: "",
-        pairVal: "",
-      },
-    ],
+    enterInputGroup: <pairInputType[]>[],
   }),
   actions: {
     getArraySameResult(a1: string[], a2: string[]) {
@@ -130,6 +112,55 @@ export const useStore = defineStore("main", {
       console.log(tree);
       this.spFloorOneTree.children = tree;
     },
+    addEnterInputPair() {
+      // 新增輸入格
+      const addCountGroup = [];
+      const addCount = 5;
+      for (let index = 0; index < addCount; index++) {
+        addCountGroup.push(index + 1);
+      }
+      addCountGroup.reduce((pre, curr, index, array) => {
+        // 子層
+        const nid = "n-" + this.genNonDuplicateID(5);
+        this.newSpFloorOneTree.push({
+          nid: nid,
+          key: "",
+          value: "",
+          parentNid: pre,
+          inputFloor: this.enterInputGroup.length, // this.inputFloor,
+          inputOrder: index,
+          children: [],
+        });
+        // 父層
+        // const group: any = this.parentGroup;
+        // group[`${nid}`] = [];
+        // if (pre) {
+        //   group[`${pre}`].push(nid);
+        // }
+        return nid;
+      }, "");
+      // 新增輸入框
+      this.enterInputGroup.push({
+        pairKey: "",
+        pairVal: "",
+      });
+    },
+    delOwnPair(order: number, array: number[]) {
+      const stayList: nodeItem[] = [];
+      this.newSpFloorOneTree.forEach((node, index) => {
+        if (array.indexOf(index) === -1) {
+          if (node.inputFloor > order) {
+            // 如果是刪第一層, 全部都要 -1
+            // 如果是刪中間, 小於自己的樓層都要 -1, 大於自己的樓層就不用變
+            // 如果是刪最後一層, 自己是最後一層的話, 其他層就不用變更了
+            node.inputFloor = node.inputFloor - 1;
+          }
+          stayList.push(node);
+        }
+      });
+      this.newSpFloorOneTree = stayList;
+      this.enterInputGroup.splice(order, 1);
+    },
   },
   getters: {
     get_lockBtnState(state) {
@@ -142,19 +173,30 @@ export const useStore = defineStore("main", {
           return result;
         }
         const map: any = {};
-        arr.forEach((item) => (map[item.nid] = item));
         arr.forEach((item) => {
+          map[item.nid] = item;
           const parent = map[item.parentNid];
+          // console.log(map);
+          // parent
           if (parent) {
-            (parent.children || (parent.children = [])).push(item);
+            // console.log(parent.children);
+            if (parent.children.length === 0) {
+              parent.children.push(item);
+            }
+            // else if (parent.children.indexOf(item.nid) === -1) {
+            //   parent.children.push(item);
+            // }
+
+            // (parent.children || (parent.children = [])).push(item);
+            // console.log("下");
           } else {
+            // console.log("上");
             result.push(item);
           }
         });
         return result;
       };
       const tree = arrayToTree(state.newSpFloorOneTree);
-
       const spFloorOneTree = {
         nid: "root",
         key: "",
@@ -165,7 +207,6 @@ export const useStore = defineStore("main", {
         children: [],
       };
       spFloorOneTree.children = tree;
-
       return spFloorOneTree;
     },
   },

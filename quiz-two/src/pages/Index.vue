@@ -1,7 +1,7 @@
 <template lang="pug">
 div.container
   div.left-col
-    OnlyOneInput(:textSplit="pair" :order="index" v-for="(pair,index) in Object.values(store.newEnterInput)" :key="index")
+    OnlyOneInput(:textSplit="pair" :order="index" v-for="(pair,index) in Object.values(store.enterInputGroup)" :key="index")
     div.add-pair-btn(@click.prevent="addPairInput()" :disabled="store.get_lockBtnState") Add New Pair
   perfect-scrollbar.right-col
     TreeCompView(:treeData="store.get_newSpFloorOneTreeObj")
@@ -19,34 +19,8 @@ const secDimensionTree = computed(() => {
 
 // 原始資料反推回來陣列 (初始化)
 const secDimensionArray = computed(() => {
-  return store.newEnterInput;
+  return store.enterInputGroup;
 });
-
-const addCountGroup = [];
-const addCount = 10;
-for (let index = 0; index < addCount; index++) {
-  addCountGroup.push(index + 1);
-}
-addCountGroup.reduce((pre, curr, index, array) => {
-  const group: any = store.parentGroup;
-  // 子層
-  const nid = "n-" + store.genNonDuplicateID(5);
-  store.newSpFloorOneTree.push({
-    nid: nid,
-    key: "",
-    value: "",
-    parentNid: pre,
-    inputFloor: 0,
-    inputOrder: 0,
-    children: [],
-  });
-  group[`${nid}`] = [];
-  // 父層
-  if (pre) {
-    group[`${pre}`].push(nid);
-  }
-  return nid;
-}, "");
 
 // const aaa = computed(() => {
 //   const bbb: any = [];
@@ -89,6 +63,7 @@ addCountGroup.reduce((pre, curr, index, array) => {
 // 新增事件
 const addPairInput = async () => {
   await store.setLockBtnOpen();
+  await store.addEnterInputPair();
   await setTimeout(() => {
     store.setLockBtnClose();
   }, 1000);
