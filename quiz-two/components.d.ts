@@ -7,10 +7,10 @@ declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     AddIcon: typeof import('./src/components/AddIcon.vue')['default']
     CloseIcon: typeof import('./src/components/CloseIcon.vue')['default']
+    OnlyOneInput: typeof import('./src/components/OnlyOneInput.vue')['default']
     RemoveIcon: typeof import('./src/components/RemoveIcon.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    SecDimensioInput: typeof import('./src/components/SecDimensioInput.vue')['default']
     TreeCompView: typeof import('./src/components/TreeCompView.vue')['default']
   }
 }

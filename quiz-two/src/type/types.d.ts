@@ -24,3 +24,15 @@ export type nodeUnitType = {
 export type childrenUnitType = {
   [key: string]: string[];
 };
+
+export type nodeItem = {
+  nid: string;
+  key: string;
+  value: string;
+  parentNid: string;
+  inputFloor: number;
+  inputOrder: number;
+  children: any[];
+  frontSame: boolean;
+  ellipsis: boolean;
+};

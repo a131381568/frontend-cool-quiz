@@ -1,46 +1,22 @@
 import { defineStore } from "pinia";
-// import { useThrottleFn } from "@vueuse/core";
-import {
-  pairInputType,
-  nodeUnitType,
-  childrenUnitType,
-  nodeUnitValueType,
-} from "@/type/types";
-const vm = this;
+import { nodeItem, pairInputType } from "@/type/types";
 export const useStore = defineStore("main", {
   state: () => ({
-    mainData: {
-      nid: "",
-      id: "root",
-      parentId: "",
-      text: "",
-      children: [],
-    },
-    nodes: <nodeUnitType>{},
-    childrenOf: <childrenUnitType>{},
-    secDimensionList: <pairInputType[]>[
-      {
-        pairKey: "nav.header.creator",
-        pairVal: "3D Fabric Creator",
-      },
-      {
-        pairKey: "nav.icon",
-        pairVal: "Icon name",
-      },
-      {
-        pairKey: "nav.header.product",
-        pairVal: "Product",
-      },
-      {
-        pairKey: "common.feature.experience",
-        pairVal: "Try It Now!",
-      },
-      {
-        pairKey: "common.feature.chooseFabric",
-        pairVal: "Choose Fabric",
-      },
-    ],
     lockBtn: false,
+    spFloorOneTree: {
+      nid: "n-123456789",
+      key: "root",
+      value: "",
+      parentNid: "",
+      inputFloor: 0,
+      inputOrder: 0,
+      children: [],
+      frontSame: false,
+      ellipsis: false,
+    },
+    nodeList: <nodeItem[]>[],
+    protoNodeList: <nodeItem[]>[],
+    enterInputGroup: <pairInputType[]>[],
   }),
   actions: {
     getArraySameResult(a1: string[], a2: string[]) {
@@ -56,425 +32,392 @@ export const useStore = defineStore("main", {
         Math.random().toString().substring(3, randomLength) + Date.now()
       ).toString(36);
     },
-    changeSecDimension(nodeList: string[]) {
-      const nodeArray = Object.values(this.nodes);
-      const nodeArrayByOriId = nodeArray.map((item) => item.id);
-      const parentKeys = Object.keys(this.childrenOf);
-      const parentValues = Object.values(this.childrenOf);
-      // let prevNid = "";
-      // console.log("當下全部 nodeId: ", nodeArrayByOriId);
-      // console.log("parentKeys: ", parentKeys);
-      // console.log("parentValues: ", parentValues);
-
-      // 組合二維陣列
-      nodeList.reduce((prev, currVal, currIndex, oriArray) => {
-        const nid = "n-" + this.genNonDuplicateID(5);
-        let rootRepeat = false;
-        let ownRepeat = false;
-        let repeatNodeType = false;
-        let multipleRepeatType = 0;
-
-        // 先判斷頂層是否為重複的 node
-        const findrootNode = nodeArray.filter(
-          (node) => node.id === oriArray[0]
-        );
-        if (findrootNode.length > 0) {
-          // console.log(`
-          // 目前同階頂層 id :  ${oriArray[0]}
-          // 目前同階頂層 Nid:  ${findrootNode[0].nid}
-          // `);
-          rootRepeat = true;
-        } else {
-          // console.log(`
-          // 目前同階頂層 id :  ${oriArray[0]}
-          // 目前同階頂層 Nid:  找不到
-          // `);
-          rootRepeat = false;
-        }
-
-        // 再判斷自己目前有沒有重複
-        const ownNode = nodeArray.filter((node) => node.id === currVal);
-        // console.log("重複群組: ", ownNode);
-
-        if (ownNode.length > 0) {
-          // console.log(`
-          // 目前自己的 id :  ${currVal}
-          // 目前自己的 Nid ( 不確定, 有可能重複 ):  ${ownNode[0].nid}
-          // `);
-          ownRepeat = true;
-        } else {
-          // console.log(`
-          // 目前自己的 id :  ${currVal}
-          // 目前自己的 Nid:  找不到
-          // `);
-          ownRepeat = false;
-        }
-
-        if (rootRepeat && ownRepeat) {
-          // 頂層重複 + 自己重複
-          repeatNodeType = true;
-          multipleRepeatType = 1;
-        } else if (rootRepeat && !ownRepeat) {
-          // 頂層重複 + 自己不重複
-          repeatNodeType = false;
-          multipleRepeatType = 2;
-        } else if (!rootRepeat && ownRepeat) {
-          // 頂層不重複 + 自己重複
-          repeatNodeType = false;
-          multipleRepeatType = 3;
-        } else if (!rootRepeat && !ownRepeat) {
-          // 頂層不重複 + 自己不重複
-          repeatNodeType = false;
-          multipleRepeatType = 4;
-        }
-
-        // 更新字串函式
-        const updatePairValInNode = () => {
-          let textContent = "";
-          // console.log(
-          //   "如果是最後一輪則加上 text: ",
-          //   currIndex,
-          //   oriArray.length
-          // );
-          if (currIndex + 1 === oriArray.length) {
-            const filterContent = this.secDimensionList.filter(
-              (item) => item.pairKey === oriArray.join(".")
-            );
-            if (filterContent.length > 0) {
-              // console.log(filterContent);
-              textContent = filterContent[filterContent.length - 1].pairVal;
-            }
-          }
-          return textContent;
-        };
-
-        // 新增 node + childOf 函式
-        const setNodesAndChildOf = () => {
-          // 全部節點
-          this.nodes[`${nid}`] = {
-            nid: nid,
-            id: currVal,
-            parentId: prev,
-            text: updatePairValInNode(), // 如果是最後一輪則加上 text
-            children: [],
-          };
-          // 父階層, 先製作空陣列
-          if (!Object.prototype.hasOwnProperty.call(this.childrenOf, nid)) {
-            this.childrenOf[`${nid}`] = [];
-          }
-          if (
-            prev &&
-            Object.prototype.hasOwnProperty.call(this.childrenOf, prev)
-          ) {
-            this.childrenOf[`${prev}`].push(nid);
-          }
-        };
-
-        // 有重複就取得原 node 資訊
-        if (repeatNodeType) {
-          // console.log(ownNode);
-          // console.log(`
-          //     id 為 --------------- ${currVal}
-          //     自己的隨機 nid 為 -------  ${nid}
-          // `);
-          if (currIndex === 0) {
-            // 回傳重複的第一位的 nid
-            let floorOneNid = nid;
-            const floorOneInfo = nodeArray.filter(
-              (item) => item.id === currVal && !item.parentId
-            );
-            if (floorOneInfo.length > 0) {
-              floorOneNid = floorOneInfo[0].nid;
-            }
-            // 有重複又是最後一階, 就把字串更新上去
-            this.nodes[`${floorOneNid}`].text = updatePairValInNode();
-            return floorOneNid;
-          } else {
-            if (
-              multipleRepeatType === 0 ||
-              multipleRepeatType === 2 ||
-              multipleRepeatType === 4
-            ) {
-              // 頂層重複 + 自己不重複 || 頂層不重複 + 自己不重複
-              // 有重複又是最後一階, 就把字串更新上去
-              // if (Object.prototype.hasOwnProperty.call(this.nodes, nid)) {
-              //   this.nodes[`${nid}`].text = updatePairValInNode();
-              // }
-              return nid;
-            } else if (multipleRepeatType === 1 || multipleRepeatType === 3) {
-              // 頂層重複 + 自己重複 || 頂層不重複 + 自己重複
-              // 重複, 回傳重複的 nid
-
-              const findFirstNid: any = (item: nodeUnitValueType) => {
-                const onlyParentId = item.parentId;
-                if (onlyParentId) {
-                  const findParentNode = nodeArray.filter(
-                    (node) => node.nid === onlyParentId
-                  );
-                  return findFirstNid(findParentNode[0]);
-                } else {
-                  return item.nid;
-                }
-              };
-
-              // console.log("ownNode: ", ownNode);
-              // console.log("頂層 nid: ", findrootNode[0].nid);
-              let realOwnNodeInfo: nodeUnitValueType = {
-                nid: "",
-                id: "",
-                parentId: "",
-                text: "",
-                children: [],
-              };
-              if (ownNode.length === 0) {
-                return nid;
-              } else {
-                ownNode.forEach((element) => {
-                  // 前後值
-                  // 頂層
-                  if (findrootNode[0].nid === findFirstNid(element)) {
-                    realOwnNodeInfo = element;
-                  }
-                  // console.log(findFirstNid(element));
-                });
-                // 此為查詢到上下, 其他階層相同的 nid
-                // 如果要查詢左右, 則是要判斷 parentId 是否相同
-                // console.log("realOwnNodeInfo: ", realOwnNodeInfo);
-                // console.log("oriArray: ", oriArray);
-                if (realOwnNodeInfo.id && realOwnNodeInfo.parentId) {
-                  const ownParentId = oriArray[currIndex - 1];
-                  const searchParentId =
-                    this.nodes[`${realOwnNodeInfo.parentId}`].id;
-                  // console.log("ownParentId: ", ownParentId);
-                  // console.log("searchParentId: ", searchParentId);
-                  if (ownParentId === searchParentId) {
-                    // console.log("回傳 realOwnNodeInfo: ", realOwnNodeInfo.nid);
-                    // 有重複又是最後一階, 就把字串更新上去
-                    if (
-                      Object.prototype.hasOwnProperty.call(
-                        this.nodes,
-                        realOwnNodeInfo.nid
-                      )
-                    ) {
-                      this.nodes[`${realOwnNodeInfo.nid}`].text =
-                        updatePairValInNode();
-                    }
-                    // 回傳真正的 nid
-                    return realOwnNodeInfo.nid;
-                  } else {
-                    // console.log("新增 nid: ", nid);
-                    // 有重複又是最後一階, 就把字串更新上去
-                    // if (Object.prototype.hasOwnProperty.call(this.nodes, nid)) {
-                    //   this.nodes[`${nid}`].text = updatePairValInNode();
-                    // }
-                    return nid;
-                  }
-                } else {
-                  // id 相同 + nid 不相同, 此判斷為左右重複, 需新增節點
-                  // 設置對照表
-                  setNodesAndChildOf();
-                  return nid;
-                }
-              }
-            } else {
-              // 預設不重複, 回傳 nid
-              // 有重複又是最後一階, 就把字串更新上去
-              // if (Object.prototype.hasOwnProperty.call(this.nodes, nid)) {
-              //   this.nodes[`${nid}`].text = updatePairValInNode();
-              // }
-              // console.log("預設不重複, 回傳 nid");
-              return nid;
-            }
-          }
-        } else {
-          // 設置對照表
-          setNodesAndChildOf();
-          return nid;
-        }
-      }, "");
-    },
-    addSecDimensionItem() {
-      // 新增輸入欄
-      this.secDimensionList.push({
-        pairKey: "",
-        pairVal: "",
-      });
-    },
-    removeSecDimensionItem(pairKey: string, order: number) {
-      // 刪除輸入欄
-      this.secDimensionList.splice(order, 1);
-      ////////////////////////////////////
-      // const splitStr = pairKey.split(".");
-      // const nodeArray = Object.values(this.nodes);
-      // const parentKeys = Object.keys(this.childrenOf);
-      // const parentValues = Object.values(this.childrenOf);
-      // // 第一個節點
-      // const firstStr = splitStr[0];
-      // const firstNodes = nodeArray.filter(
-      //   (item) => item.id === firstStr && !item.parentId
-      // );
-      // 最後的節點
-      // const lastStr = splitStr[splitStr.length - 1];
-      // const lastNodes = nodeArray.filter((item) => item.id === lastStr);
-      // console.log("最後的節點: ", lastNodes);
-
-      // // 除此頂層以外的節點
-      // const inCludeNodes = nodeArray.filter(
-      //   (item) => splitStr.indexOf(item.id) > 0
-      // );
-
-      // // 查詢頂層 nid 函式
-      // const findFirstNid: any = (item: nodeUnitValueType) => {
-      //   const onlyParentId = item.parentId;
-      //   if (onlyParentId) {
-      //     const findParentNode = nodeArray.filter(
-      //       (node) => node.nid === onlyParentId
-      //     );
-      //     return findFirstNid(findParentNode[0]);
-      //   } else {
-      //     return item.nid;
-      //   }
-      // };
-
-      // // 查詢子 node 所有 nid
-      // const inCludeNodesNid: string[] = []; // firstNodes[0].nid
-      // inCludeNodes.forEach((otherNode) => {
-      //   if (findFirstNid(otherNode) === firstNodes[0].nid) {
-      //     inCludeNodesNid.push(otherNode.nid);
-      //   }
-      // });
-
-      // // store.childrenOf 刪除指定 nid
-      // // const searchParentKeysOrderGroup = [];
-      // // const searchParentKeys =
-      // parentKeys.forEach((item, index) => {
-      //   if (inCludeNodesNid.indexOf(item) >= 0) {
-      //     // searchParentKeysOrderGroup.push(index);
-      //     console.log(item);
-
-      //     if (parentValues[Number(index)].length === 0) {
-      //       console.log("直接刪除: ", this.childrenOf[`${item}`]);
-      //       delete this.childrenOf[parentKeys[Number(index)]];
-      //       delete this.nodes[`${item}`];
-      //     } else {
-      //       console.log("排除陣列中的 nid: ", this.childrenOf[`${item}`]);
-      //       // childrenOf value, 排除陣列中的 nid
-      //       console.log(parentValues[Number(index)]);
-
-      //       const rmChildInnerArray = parentValues[Number(index)].filter(
-      //         (inCludeItem) => inCludeNodesNid.indexOf(inCludeItem) >= 0
-      //       );
-      //       console.log(rmChildInnerArray);
-      //       this.childrenOf[`${item}`] = rmChildInnerArray;
-      //     }
-      //   }
-      // });
-
-      // // store.nodes 刪除指定 nid
-      // inCludeNodesNid.forEach((item) => {
-      //   // delete this.nodes[item];
-      //   // delete this.childrenOf[item];
-      // });
-
-      //////////////////////////////
-    },
-    // 初始化事件
-    initSecDimension() {
-      // console.log("初始化事件");
-      this.nodes = {};
-      this.childrenOf = {};
-      this.secDimensionList.forEach((item) => {
-        const splitStr = item.pairKey.split(".");
-        this.changeSecDimension(splitStr);
-      });
-    },
     setLockBtnOpen() {
       this.lockBtn = true;
     },
     setLockBtnClose() {
       this.lockBtn = false;
     },
+    addEnterInputPair() {
+      // 新增輸入格
+      const addCountGroup = [];
+      const addCount = Number(import.meta.env.VITE_APP_BUILD_COUNT);
+      for (let index = 0; index < addCount; index++) {
+        addCountGroup.push(index + 1);
+      }
+      addCountGroup.reduce((pre, curr, index, array) => {
+        // console.log("inputOrder: ", index);
+        // 子層
+        const nid = "n-" + this.genNonDuplicateID(5);
+        const node = {
+          nid: nid,
+          key: "",
+          value: "",
+          parentNid: pre,
+          inputFloor: this.enterInputGroup.length, // this.inputFloor,
+          inputOrder: index,
+          children: [],
+          frontSame: false,
+          ellipsis: false,
+        };
+        this.nodeList.push(node);
+        this.protoNodeList.push(JSON.parse(JSON.stringify(node)));
+        return nid;
+      }, "");
+      // 新增輸入框
+      this.enterInputGroup.push({
+        pairKey: "",
+        pairVal: "",
+      });
+    },
+    delOwnPair(order: number, array: number[]) {
+      const delLoop = (arr: nodeItem[]) => {
+        const stayList: nodeItem[] = [];
+        arr.forEach((node, index) => {
+          if (array.indexOf(index) === -1) {
+            if (node.inputFloor > order) {
+              // 如果是刪第一層, 全部都要 -1
+              // 如果是刪中間, 小於自己的樓層都要 -1, 大於自己的樓層就不用變
+              // 如果是刪最後一層, 自己是最後一層的話, 其他層就不用變更了
+              node.inputFloor = node.inputFloor - 1;
+            }
+            stayList.push(node);
+          }
+        });
+        return stayList;
+      };
+      // 活動 nodeList
+      this.nodeList = delLoop(this.nodeList);
+      // 原始 nodeList
+      this.protoNodeList = delLoop(this.protoNodeList);
+      // 刪除輸入欄
+      this.enterInputGroup.splice(order, 1);
+    },
+    checkEnterInputGroupAfterBuild(array: pairInputType[]) {
+      array.forEach((el) => {
+        this.applyEnterInputPairInTree(el.pairKey, el.pairVal);
+      });
+    },
+    applyEnterInputPairInTree(pairKey: string, pairVal: string) {
+      const splitKeyArr = pairKey
+        .split(".")
+        .filter((item: string) => item !== "");
+      let nodeValue = "";
+      // 先設定節點數量範圍
+      const applyCountGroup = [];
+      const applyCount = Number(import.meta.env.VITE_APP_BUILD_COUNT);
+      for (let index = 0; index < applyCount; index++) {
+        applyCountGroup.push(index + 1);
+      }
+      applyCountGroup.reduce((pre, curr, index, array) => {
+        // 最後一個節點才賦予 VAL
+        if (index === splitKeyArr.length - 1) {
+          nodeValue = pairVal;
+        }
+        // 節點資料
+        const nid = "n-" + this.genNonDuplicateID(5);
+        this.nodeList.push({
+          nid: nid,
+          key: splitKeyArr[`${index}`],
+          value: nodeValue,
+          parentNid: pre,
+          inputFloor: this.enterInputGroup.length, // this.inputFloor,
+          inputOrder: index,
+          children: [],
+          frontSame: false, // 再看怎麼改
+          ellipsis: false,
+        });
+        return nid;
+      }, "");
+
+      // 設置原始資料
+      this.protoNodeList = JSON.parse(JSON.stringify(this.nodeList));
+
+      // 新增輸入框
+      this.enterInputGroup.push({
+        pairKey: pairKey,
+        pairVal: pairVal,
+      });
+    },
+    buildTreeByNodeList(
+      arr: nodeItem[],
+      setRepeatKey: string[],
+      setRepeatNid: string[]
+    ) {
+      const result: nodeItem[] = [];
+      if (!Array.isArray(arr) || arr.length === 0) {
+        return result;
+      }
+      let setProtoNodes: nodeItem[] = [];
+
+      // newArray.forEach((item) => {
+      //   // 將異動的欄位階層補回來
+      //   if (!item.parentNid && setRepeatKey.indexOf(item.key) === -1) {
+      //     const resetParentNid = this.protoNodeList.filter(
+      //       (rInfo) =>
+      //         rInfo.inputFloor === item.inputFloor && rInfo.inputOrder !== 0
+      //     );
+      //     setProtoNodes = setProtoNodes.concat(resetParentNid);
+      //     // console.log(item.key);
+      //     console.log(setProtoNodes);
+      //     // 將已經被過濾的也給拉回來
+      //     const isRmNodeGroup = this.protoNodeList.filter(
+      //       (rmInfo) => setRepeatNid.indexOf(rmInfo.nid) >= 0
+      //     );
+      //     const needReCoverNode = isRmNodeGroup.filter(
+      //       (nrcInfo) => nrcInfo.parentNid === item.nid
+      //     );
+      //     if (needReCoverNode.length > 0) {
+      //       const hasOwnChild = item.children.map(
+      //         (hocNode: nodeItem) => hocNode.nid
+      //       );
+      //       const hasOwnNid = hasOwnChild.indexOf(
+      //         needReCoverNode[needReCoverNode.length - 1].nid
+      //       );
+      //       if (hasOwnNid === -1) {
+      //         item.children.push(needReCoverNode[needReCoverNode.length - 1]);
+      //       }
+      //       arr.push(needReCoverNode[needReCoverNode.length - 1]);
+      //     }
+      //   }
+
+      //   const isSameNidOrder = setProtoNodes.filter(
+      //     (spNode) => spNode.nid === item.nid
+      //   );
+
+      //   // 重新賦值
+      //   if (isSameNidOrder.length > 0) {
+      //     item = isSameNidOrder[0];
+      //     item.value = "xxxxxxxxxxxxxx";
+      //     console.log(item);
+      //     // 搜尋有沒有跟自己一樣的
+      //     const searchSameKey = arr.filter(
+      //       (sameKey) => sameKey.key === item.key
+      //     );
+      //     console.log("searchSameKey: ", searchSameKey);
+      //     if (searchSameKey.length > 0) {
+      //       setProtoNodes.push(searchSameKey[0]);
+      //     }
+      //   }
+
+      //   return item;
+      // });
+
+      const map: any = {};
+      const nodeListNid: string[] = this.nodeList.map(
+        (narr: nodeItem) => narr.nid
+      );
+      const nidArr: string[] = arr.map((narr: nodeItem) => narr.nid);
+      arr.forEach((item) => {
+        // 將異動的欄位階層補回來
+        if (!item.parentNid && setRepeatKey.indexOf(item.key) === -1) {
+          const resetParentNid = this.protoNodeList.filter(
+            (rInfo) =>
+              rInfo.inputFloor === item.inputFloor && rInfo.inputOrder !== 0
+          );
+          setProtoNodes = setProtoNodes.concat(resetParentNid);
+          // console.log(item.key);
+          // console.log(setProtoNodes);
+          const isRmNodeGroup = this.protoNodeList.filter(
+            (rmInfo) => setRepeatNid.indexOf(rmInfo.nid) >= 0
+          );
+          const needReCoverNode = isRmNodeGroup.filter(
+            (nrcInfo) => nrcInfo.parentNid === item.nid
+          );
+          if (needReCoverNode.length > 0) {
+            const hasOwnChild = item.children.map(
+              (hocNode: nodeItem) => hocNode.nid
+            );
+            const hasOwnNid = hasOwnChild.indexOf(
+              needReCoverNode[needReCoverNode.length - 1].nid
+            );
+            // if (hasOwnNid === -1) {
+            const protoNode = needReCoverNode[needReCoverNode.length - 1];
+            const searchNidOrder = nodeListNid.indexOf(protoNode.nid);
+            const newNode = protoNode;
+            // console.log(this.nodeList[`${searchNidOrder}`]);
+            newNode.key = this.nodeList[`${searchNidOrder}`].key;
+            // console.log(newNode);
+            item.children.push(newNode);
+            // arr.push(newNode);
+            // }
+
+            // 搜尋跟自己一樣的 KEY
+            const searchSameKey = arr.filter(
+              (sameKey) =>
+                sameKey.key === needReCoverNode[needReCoverNode.length - 1].key
+            );
+            // console.log("searchSameKey: ", searchSameKey);
+            if (searchSameKey.length > 0) {
+              const sameChildNid: number = nidArr.indexOf(searchSameKey[0].nid);
+              // 排除不是自己樓層的
+              const excludeOwnFloor = arr[`${sameChildNid}`].children.filter(
+                (ecof) => ecof.inputFloor === searchSameKey[0].inputFloor
+              );
+              arr[`${sameChildNid}`].children = excludeOwnFloor;
+            }
+          }
+        }
+
+        const isSameNidOrder = setProtoNodes.filter(
+          (spNode) => spNode.nid === item.nid
+        );
+
+        // 重新賦值
+        if (isSameNidOrder.length > 0) {
+          const protoNodeData = isSameNidOrder[0];
+          // console.log("重新賦值: ", item.key);
+
+          item.parentNid = protoNodeData.parentNid;
+          item.children = protoNodeData.children;
+          // console.log(item);
+          // 搜尋有沒有跟自己一樣的
+          // const searchSameKey = arr.filter(
+          //   (sameKey) => sameKey.key === item.key
+          // );
+          // console.log("searchSameKey: ", searchSameKey);
+          // if (searchSameKey.length > 0) {
+          //   setProtoNodes.push(searchSameKey[0]);
+          // }
+        }
+
+        ///////////////////////////
+        map[item.nid] = item;
+        const parent = map[item.parentNid];
+        // console.log("parent: ", map[item.nid]);
+
+        // console.log(map);
+
+        if (parent) {
+          if (parent.children.length === 0) {
+            parent.children.push(item);
+          } else if (parent.children.length > 0) {
+            // 排除子項目的上層不是自己的
+            const stayChid = parent.children.filter(
+              (pinfo: nodeItem) => pinfo.parentNid == parent.nid
+            );
+            parent.children = stayChid;
+            // 如果子項目不包含自己就加進去
+            const includeNidChild = parent.children.map(
+              (fNode: nodeItem) => fNode.nid
+            );
+            const hasOwnNid = includeNidChild.indexOf(item.nid);
+            if (hasOwnNid === -1) {
+              parent.children.push(item);
+            }
+          }
+        } else {
+          // console.log(item);
+          // if (!item.parentNid) {
+          // root 層推上去
+          result.push(item);
+          // }
+        }
+      });
+      // console.log("result: ", result);
+      return result;
+    },
+    arrayToTree(arr: nodeItem[]) {
+      // re nid 順序
+      // const reOriNidGroup = this.nodeList.map((item) => item.nid);
+      // arr.forEach((ori, oriIndex) => {
+      //   const order = oriIndex - 1;
+      //   if (ori.parentNid) {
+      //     ori.parentNid = reOriNidGroup[Number(order)];
+      //   }
+      // });
+      ////////////////////////////////////////////////
+      const setRepeatKey: string[] = [];
+      const setRepeatNid: string[] = [];
+      const setStay = new Set();
+      const setStayDetail = new Set();
+      /* 過濾重複的 node */
+      const repeatRes = arr.filter((item, index, array) => {
+        item.frontSame = false;
+        item.ellipsis = false;
+        if (!setStay.has(item.key)) {
+          setStay.add(item.key);
+          setStayDetail.add(item);
+          const nidRepeatOrder = setRepeatNid.indexOf(item.parentNid);
+          // 將被過濾掉的 nid 補給他們的子項目
+          if (nidRepeatOrder >= 0) {
+            const repeatActInfo = array.filter(
+              (info) =>
+                info.key === setRepeatKey[Number(nidRepeatOrder)] &&
+                info.nid !== item.parentNid
+            );
+            if (repeatActInfo.length > 0) {
+              item.parentNid = repeatActInfo[0].nid;
+            }
+          }
+          return true;
+        } else {
+          // 記下重複 node 的 nid 和 key
+          if (item.key) {
+            if (
+              setRepeatNid.indexOf(item.parentNid) >= 0 &&
+              item.parentNid.length > 0 &&
+              item.inputOrder > 0
+            ) {
+              // 包含以上的條件才要刪除
+              setRepeatNid.push(item.nid);
+              setRepeatKey.push(item.key);
+              item.ellipsis = true;
+              return false;
+            } else if (item.inputOrder === 0 && !item.parentNid) {
+              // 一定要刪除
+              setRepeatNid.push(item.nid);
+              setRepeatKey.push(item.key);
+              item.ellipsis = true;
+              return false;
+            }
+          }
+        }
+      });
+      // console.log("setRepeatNid: ", setRepeatNid);
+      // console.log("setRepeatKey: ", setRepeatKey);
+      const result = this.buildTreeByNodeList(
+        repeatRes,
+        setRepeatKey,
+        setRepeatNid
+      );
+      return result;
+    },
+    initTreeGetters() {
+      const tree: any = this.arrayToTree(this.nodeList);
+      // const spFloorOneTree = {
+      //   nid: "n-123456789",
+      //   key: "root",
+      //   value: "",
+      //   parentNid: "",
+      //   inputFloor: 0,
+      //   inputOrder: 0,
+      //   children: [],
+      //   frontSame: false,
+      //   ellipsis: false,
+      // };
+      this.spFloorOneTree.children = [];
+      this.spFloorOneTree.children = tree;
+
+      //////////////////
+      // re nid 順序
+      // const reOriNidGroup = this.nodeList.map((item) => item.nid);
+      // this.nodeList.forEach((ori, oriIndex) => {
+      //   const order = oriIndex - 1;
+      //   if (ori.parentNid) {
+      //     ori.parentNid = reOriNidGroup[Number(order)];
+      //   }
+      // });
+      //////////////////
+    },
   },
   getters: {
-    get_rootChild: (state) => {
-      return state.mainData.children.length;
-    },
-    get_floorOneTree(state) {
-      const nodeArray = Object.values(state.nodes);
-      const nodeKeys = Object.keys(state.nodes);
-      const parentKeys = Object.keys(state.childrenOf);
-      const parentValues = Object.values(state.childrenOf);
-      // 父陣列
-      const setParentMap = parentValues.map((item: any, index: number) => {
-        const nodeInfo = nodeArray.filter(
-          (node: any) => node.nid === parentKeys[Number(index)]
-        );
-        const childrenInfo = item.map((chInfo: any) => {
-          const actionNodeKeys: number = nodeKeys.indexOf(chInfo);
-          return actionNodeKeys >= 0 ? nodeArray[Number(actionNodeKeys)] : [];
-        });
-        const newItem = {
-          nid: parentKeys[Number(index)],
-          id: nodeInfo[0].id,
-          parentId: nodeInfo.length > 0 ? nodeInfo[0].parentId : "",
-          text: nodeInfo[0].text, // parentKeys[index].text
-          children: childrenInfo,
-        };
-        return newItem;
-      });
-      // 父層巢狀收縮
-      const getId = (mainData: any) => {
-        if (mainData.children && Array.isArray(mainData.children)) {
-          mainData.children.reduce(
-            (prev: any, currVal: any, currIndex: number, array: any) => {
-              const concatIdArray = array.map((item: any) => item.nid);
-              const childrenArray = currVal.children.map((parenScInfo: any) => {
-                const actionNodeKeys: number = concatIdArray.indexOf(
-                  parenScInfo.nid
-                );
-                return array[Number(actionNodeKeys)];
-              });
-              currVal.children = childrenArray;
-              return currVal;
-            },
-            []
-          );
-          const filterMainData = mainData.children.filter(
-            (item: any) => !item.parentId
-          );
-          return filterMainData;
-        }
-      };
-      const mainData = {
-        nid: "",
-        id: "root",
-        parentId: "",
-        text: "",
-        children: setParentMap,
-      };
-      // 最後設置
-      const settingMainData = {
-        nid: "",
-        id: "root",
-        parentId: "",
-        text: "",
-        children: getId(mainData),
-      };
-      ////////////////////////////////////
-      // const result = state.secDimensionTree;
-      return settingMainData;
-    },
     get_lockBtnState(state) {
       return state.lockBtn;
     },
-    get_nodes(state) {
-      return state.nodes;
-    },
-    get_childrenOf(state) {
-      return state.childrenOf;
-    },
-    get_secDimensionList(state) {
-      return state.secDimensionList;
+    get_nodeListObj: (state: any) => {
+      state.initTreeGetters();
+      return state.spFloorOneTree;
     },
   },
 });
