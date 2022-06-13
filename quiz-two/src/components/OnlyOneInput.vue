@@ -31,7 +31,7 @@ const keySplitArray: LooseObject = computed({
     return data;
   },
   set: (val) => {
-    console.log(val);
+    // console.log(val);
     emit("update:textSplit", val);
   },
 });
@@ -60,8 +60,17 @@ const filterOwnInputGroup = computed(() => {
   const data = store.newSpFloorOneTree.filter(
     (item) => item.inputFloor === order.value
   );
-  const nidGroup = data.map((item) => allNidGroup.indexOf(item.nid));
-  return nidGroup;
+
+  // const nidGroup = data.map((item) => allNidGroup.indexOf(item.nid));
+  let firstNid = allNidGroup.indexOf(data[0].nid) - 1;
+
+  const countGroup = [];
+  const floorInnerCount = Number(import.meta.env.VITE_APP_BUILD_COUNT);
+  for (let index = 0; index < floorInnerCount; index++) {
+    firstNid = firstNid + 1;
+    countGroup.push(firstNid);
+  }
+  return countGroup;
 });
 
 // 監聽輸入欄更改事件
@@ -71,16 +80,17 @@ watchDebounced(
     // console.log("舊值: ", oldVal);
     // console.log("新值: ", newVal);
     // console.log("第幾行 input: ", order.value);
-    const allCount = 5;
+    const allCount = Number(import.meta.env.VITE_APP_BUILD_COUNT);
     for (let index = 0; index < allCount; index++) {
       // 更新 KEY
       const fIndex = filterOwnInputGroup.value[Number(index)];
-      console.log("fIndex: ", fIndex);
-      if (fIndex) {
-        console.log(store.newSpFloorOneTree[`${fIndex}`]);
+      // console.log("fIndex: ", fIndex);
+      if (fIndex >= 0) {
+        // console.log(store.newSpFloorOneTree[`${fIndex}`]);
         store.newSpFloorOneTree[`${fIndex}`].key = newVal[`${index}`];
-        store.newSpFloorOneTree[`${fIndex}`].inputFloor = order.value;
-        store.newSpFloorOneTree[`${fIndex}`].inputOrder = fIndex;
+        // store.newSpFloorOneTree[`${fIndex}`].parentNid = store.newSpFloorOneTree[`${fIndex - 1}`].nid;
+        // store.newSpFloorOneTree[`${fIndex}`].frontSame = false;
+
         // 更新 VAL
         if (index === keySplitLen.value) {
           store.newSpFloorOneTree[`${fIndex}`].value = lastVal.value;
@@ -89,44 +99,6 @@ watchDebounced(
         }
       }
     }
-
-    // 針對最後一個
-    // store.newSpFloorOneTree[newVal.length - 1].key = newVal[newVal.length - 1];
-    // store.newSpFloorOneTree[newVal.length - 1].inputFloor = order.value;
-    // store.newSpFloorOneTree[newVal.length - 1].inputOrder = newVal.length - 1;
-
-    // 新舊值比較
-    // let origin = newVal.concat(oldVal);
-    // let result = origin.reduce((obj: any, item: string, idnex: number) => {
-    //   let repreatNum = 1;
-    //   if (obj[`${item}`]) {
-    //     repreatNum = obj[`${item}`].repeat + 1;
-    //   }
-    //   obj[`${item}`] = {
-    //     repeat: repreatNum,
-    //     order: idnex,
-    //   };
-    //   return obj;
-    // }, {});
-    // Math.max(Number(...Object.values(result)));
-
-    // 新增
-    // const nid = "n-" + Math.floor(new Date().getTime() / 1000);
-    // store.newSpFloorOneTree[`${nid}`] = {
-    //   nid: nid,
-    //   key: newVal,
-    //   value: "",
-    //   parentNid: "",
-    //   childNidGroup: [],
-    //   inputFloor: order.value,
-    //   inputOrder: 0,
-    //   treePosition: [0],
-    // };
-
-    // 修改
-    // const filterName =
-
-    // 刪除
   },
   { debounce: 0 }
 );
@@ -135,20 +107,22 @@ watchDebounced(
 watchDebounced(
   lastVal,
   (newVal, oldVal) => {
-    const allCount = 5;
+    const allCount = Number(import.meta.env.VITE_APP_BUILD_COUNT);
     for (let index = 0; index < allCount; index++) {
       const fIndex = filterOwnInputGroup.value[Number(index)];
-      if (fIndex) {
+      if (fIndex >= 0) {
         if (index === keySplitLen.value) {
           // 先檢查最後一個的 node 是誰? 在賦值
           store.newSpFloorOneTree[`${fIndex}`].value = String(newVal);
-        } else {
+        }
+        /*
+        else {
           store.newSpFloorOneTree[`${fIndex}`].value = "";
         }
+        
+        */
       }
     }
-    // store.newSpFloorOneTree[newVal.length - 1].inputFloor = order.value;
-    // store.newSpFloorOneTree[newVal.length - 1].inputOrder = newVal.length - 1;
   },
   { debounce: 0 }
 );

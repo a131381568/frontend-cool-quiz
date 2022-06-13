@@ -7,20 +7,7 @@ div.container
     TreeCompView(:treeData="store.get_newSpFloorOneTreeObj")
 </template>
 <script setup lang="ts">
-import { watchDebounced } from "@vueuse/core";
-const router = useRouter();
 const store = useStore();
-
-// 樹狀結構
-const secDimensionTree = computed(() => {
-  // return store.get_floorOneTree;
-  return store.spFloorOneTree;
-});
-
-// 原始資料反推回來陣列 (初始化)
-const secDimensionArray = computed(() => {
-  return store.enterInputGroup;
-});
 
 // const aaa = computed(() => {
 //   const bbb: any = [];
@@ -69,5 +56,30 @@ const addPairInput = async () => {
   }, 1000);
 };
 
-//////////////////////////////////////////
+// 假資料
+const defaultData = [
+  {
+    pairKey: "nav.header.creator",
+    pairVal: "3D Fabric Creator",
+  },
+  {
+    pairKey: "nav.icon",
+    pairVal: "Icon name",
+  },
+  {
+    pairKey: "nav.header.product",
+    pairVal: "Product",
+  },
+  {
+    pairKey: "common.feature.experience",
+    pairVal: "Try It Now!",
+  },
+  {
+    pairKey: "common.feature.chooseFabric",
+    pairVal: "Choose Fabric",
+  },
+];
+
+// 初始化
+store.checkEnterInputGroupAfterBuild(defaultData);
 </script>

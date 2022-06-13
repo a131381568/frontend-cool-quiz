@@ -33,4 +33,6 @@ export type nodeItem = {
   inputFloor: number;
   inputOrder: number;
   children: any[];
+  frontSame: boolean;
+  ellipsis: boolean;
 };
