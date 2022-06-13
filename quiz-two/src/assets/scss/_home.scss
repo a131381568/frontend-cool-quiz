@@ -85,6 +85,13 @@ html {
             }
           }
         }
+        .empty-demo {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100%;
+          font-weight: 700;
+        }
       }
       div[disabled="true"] {
         pointer-events: none;

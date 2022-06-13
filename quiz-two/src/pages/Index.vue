@@ -4,7 +4,8 @@ div.container
     OnlyOneInput(:textSplit="pair" :order="index" v-for="(pair,index) in Object.values(store.enterInputGroup)" :key="index")
     div.add-pair-btn(@click.prevent="addPairInput()" :disabled="store.get_lockBtnState") Add New Pair
   perfect-scrollbar.right-col
-    TreeCompView(:treeData="store.get_newSpFloorOneTreeObj")
+    TreeCompView(:treeData="store.get_nodeListObj")
+    div.empty-demo(v-show="store.get_nodeListObj.children.length === 0") Preview
 </template>
 <script setup lang="ts">
 const store = useStore();
@@ -12,12 +13,12 @@ const store = useStore();
 // const aaa = computed(() => {
 //   const bbb: any = [];
 //   const maxFloorNum = Math.max(
-//     ...store.newSpFloorOneTree.map((item) => item.inputFloor)
+//     ...store.nodeList.map((item) => item.inputFloor)
 //   );
-//   console.log(...store.newSpFloorOneTree);
+//   console.log(...store.nodeList);
 //   console.log(maxFloorNum);
 //   for (let index = 0; index < 1 + maxFloorNum; index++) {
-//     const ccc = store.newSpFloorOneTree.filter(
+//     const ccc = store.nodeList.filter(
 //       (item) => item.inputFloor === index
 //     );
 //     bbb.push(ccc);
@@ -56,30 +57,6 @@ const addPairInput = async () => {
   }, 1000);
 };
 
-// 假資料
-const defaultData = [
-  {
-    pairKey: "nav.header.creator",
-    pairVal: "3D Fabric Creator",
-  },
-  {
-    pairKey: "nav.icon",
-    pairVal: "Icon name",
-  },
-  {
-    pairKey: "nav.header.product",
-    pairVal: "Product",
-  },
-  {
-    pairKey: "common.feature.experience",
-    pairVal: "Try It Now!",
-  },
-  {
-    pairKey: "common.feature.chooseFabric",
-    pairVal: "Choose Fabric",
-  },
-];
-
 // 初始化
-store.checkEnterInputGroupAfterBuild(defaultData);
+// store.checkEnterInputGroupAfterBuild(defaultData);
 </script>

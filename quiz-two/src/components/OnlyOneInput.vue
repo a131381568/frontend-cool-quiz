@@ -56,10 +56,8 @@ const lastVal: LooseObject = computed(() => {
 
 // 目前可輸入 KEY 的欄位, 在 store 對應的陣列 index
 const filterOwnInputGroup = computed(() => {
-  const allNidGroup = store.newSpFloorOneTree.map((item) => item.nid);
-  const data = store.newSpFloorOneTree.filter(
-    (item) => item.inputFloor === order.value
-  );
+  const allNidGroup = store.nodeList.map((item) => item.nid);
+  const data = store.nodeList.filter((item) => item.inputFloor === order.value);
 
   // const nidGroup = data.map((item) => allNidGroup.indexOf(item.nid));
   let firstNid = allNidGroup.indexOf(data[0].nid) - 1;
@@ -82,30 +80,31 @@ watchDebounced(
     // console.log("第幾行 input: ", order.value);
     const allCount = Number(import.meta.env.VITE_APP_BUILD_COUNT);
 
-    const nidMap = store.newSpFloorOneTree.map((item) => item.nid);
-    const keyMap = store.newSpFloorOneTree.map((item) => item.key);
+    // const nidMap = store.nodeList.map((item) => item.nid);
+    // const keyMap = store.nodeList.map((item) => item.key);
 
     for (let index = 0; index < allCount; index++) {
       // 更新 KEY
       const fIndex = filterOwnInputGroup.value[Number(index)];
       // console.log("fIndex: ", fIndex);
       if (fIndex >= 0) {
-        // console.log(store.newSpFloorOneTree[`${fIndex}`]);
-        store.newSpFloorOneTree[`${fIndex}`].key = newVal[`${index}`];
+        // console.log(store.nodeList[`${fIndex}`]);
+        store.nodeList[`${fIndex}`].key = newVal[`${index}`];
         //
         // const searchText = keyMap.filter(
-        //   (text) => text === store.newSpFloorOneTree[`${fIndex}`].key
+        //   (text) => text === store.nodeList[`${fIndex}`].key
         // );
         // console.log(searchText);
 
-        // store.newSpFloorOneTree[`${fIndex}`].parentNid = store.newSpFloorOneTree[`${fIndex - 1}`].nid;
-        // store.newSpFloorOneTree[`${fIndex}`].frontSame = false;
+        // store.nodeList[`${fIndex}`].parentNid = store.nodeList[`${fIndex - 1}`].nid;
+
+        // store.nodeList[`${fIndex}`].frontSame = false;
 
         // 更新 VAL
         if (index === keySplitLen.value) {
-          store.newSpFloorOneTree[`${fIndex}`].value = lastVal.value;
+          store.nodeList[`${fIndex}`].value = lastVal.value;
         } else {
-          store.newSpFloorOneTree[`${fIndex}`].value = "";
+          store.nodeList[`${fIndex}`].value = "";
         }
       }
     }
@@ -123,11 +122,11 @@ watchDebounced(
       if (fIndex >= 0) {
         if (index === keySplitLen.value) {
           // 先檢查最後一個的 node 是誰? 在賦值
-          store.newSpFloorOneTree[`${fIndex}`].value = String(newVal);
+          store.nodeList[`${fIndex}`].value = String(newVal);
         }
         /*
         else {
-          store.newSpFloorOneTree[`${fIndex}`].value = "";
+          store.nodeList[`${fIndex}`].value = "";
         }
         
         */
