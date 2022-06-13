@@ -81,6 +81,10 @@ watchDebounced(
     // console.log("新值: ", newVal);
     // console.log("第幾行 input: ", order.value);
     const allCount = Number(import.meta.env.VITE_APP_BUILD_COUNT);
+
+    const nidMap = store.newSpFloorOneTree.map((item) => item.nid);
+    const keyMap = store.newSpFloorOneTree.map((item) => item.key);
+
     for (let index = 0; index < allCount; index++) {
       // 更新 KEY
       const fIndex = filterOwnInputGroup.value[Number(index)];
@@ -88,6 +92,12 @@ watchDebounced(
       if (fIndex >= 0) {
         // console.log(store.newSpFloorOneTree[`${fIndex}`]);
         store.newSpFloorOneTree[`${fIndex}`].key = newVal[`${index}`];
+        //
+        // const searchText = keyMap.filter(
+        //   (text) => text === store.newSpFloorOneTree[`${fIndex}`].key
+        // );
+        // console.log(searchText);
+
         // store.newSpFloorOneTree[`${fIndex}`].parentNid = store.newSpFloorOneTree[`${fIndex - 1}`].nid;
         // store.newSpFloorOneTree[`${fIndex}`].frontSame = false;
 

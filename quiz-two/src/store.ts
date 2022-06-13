@@ -148,15 +148,23 @@ export const useStore = defineStore("main", {
       });
     },
     arrayToTree(arr: nodeItem[]) {
+      // re nid 順序
+      const reOriNidGroup = this.newSpFloorOneTree.map((item) => item.nid);
+      arr.forEach((ori, oriIndex) => {
+        const order = oriIndex - 1;
+        if (ori.parentNid) {
+          ori.parentNid = reOriNidGroup[Number(order)];
+        }
+      });
+      ////////////////////////////////////////////////
       const setRepeatKey: string[] = [];
       const setRepeatNid: string[] = [];
       const setStay = new Set();
       const setStayDetail = new Set();
-      const repeatRes = arr.map((item, index, array) => {
+      /* 過濾重複的 node */
+      const repeatRes = arr.filter((item, index, array) => {
         item.frontSame = false;
         item.ellipsis = false;
-        const bakNid = item.parentNid;
-
         if (!setStay.has(item.key)) {
           setStay.add(item.key);
           setStayDetail.add(item);
@@ -168,34 +176,26 @@ export const useStore = defineStore("main", {
                 info.key === setRepeatKey[Number(nidRepeatOrder)] &&
                 info.nid !== item.parentNid
             );
-
             if (repeatActInfo.length > 0) {
-              // console.log(item.key);
-              // console.log(repeatActInfo);
-              // console.log(repeatActInfo[repeatActInfo.length - 1].nid);
-              // console.log("bakNid: ", bakNid);
-              // console.log("repeatNid: ", repeatActInfo[0].nid);
               item.parentNid = repeatActInfo[0].nid;
+              item.frontSame = true;
             }
-            item.frontSame = true;
-            // console.log(item.key, ": 上層有重複");
           } else {
             item.frontSame = false;
-            // console.log(item.key, ": 上層沒重複");
-            // item.parentNid = "";
           }
-          return item;
+          return true;
         } else {
-          // 重複被過濾掉的 node
+          // 記下重複 node 的 nid 和 key
           if (item.key) {
             setRepeatNid.push(item.nid);
             setRepeatKey.push(item.key);
             item.ellipsis = true;
           }
-          return item;
+          return false;
         }
       });
-
+      console.log("setRepeatNid: ", setRepeatNid);
+      console.log("setRepeatKey: ", setRepeatKey);
       //
       const result: any = [];
       if (!Array.isArray(repeatRes) || repeatRes.length === 0) {
@@ -203,61 +203,11 @@ export const useStore = defineStore("main", {
       }
       const map: any = {};
       repeatRes.forEach((item, index, array) => {
-        // console.log(item.key);
         map[item.nid] = item;
         const parent = map[item.parentNid];
         // parent
         if (parent) {
-          // console.log("key: ---- ", parent.key);
-          // console.log(parent.nid);
-          // console.log(setRepeatNid.indexOf(parent.nid));
-          // console.log(parent.frontSame);
-          // console.log(parent.ellipsis);
-
-          /*
-              if (parent.ellipsis) {
-                // console.log("ellipsis");
-                // console.log(parent);
-                // 去找跟自己 key 一樣的, 把 children push 給他
-                const nidRepeatOrder = setRepeatNid.indexOf(item.parentNid);
-                const repeatActInfo = array.filter(
-                  (info) =>
-                    info.key === setRepeatKey[Number(nidRepeatOrder)] &&
-                    info.nid !== item.nid
-                );
-                // 如果 child 已經包含自己 nid 的, 就不要推上去
-                const includeNidChild = map[repeatActInfo[0].nid].children.map(
-                  (fNode: nodeItem) => fNode.nid
-                );
-                const hasOwnNid = includeNidChild.indexOf(item.nid);
-                if (hasOwnNid === -1) {
-                  // map[repeatActInfo[0].nid].children.push(item);
-                }
-                // parent.children.push(item);
-              }
-          */
-
           if (parent.children.length === 0) {
-            // console.log(item);
-            // if (item.frontSame) {
-            //   const nidRepeatOrder = setRepeatNid.indexOf(item.parentNid);
-            //   const repeatActInfo = array.filter(
-            //     (info) =>
-            //       info.key === setRepeatKey[Number(nidRepeatOrder)] &&
-            //       info.nid !== item.parentNid
-            //   );
-            //   // 如果 child 已經包含自己 nid 的, 就不要推上去
-            //   const includeNidChild = map[repeatActInfo[0].nid].children.map(
-            //     (fNode: nodeItem) => fNode.nid
-            //   );
-            //   const hasOwnNid = includeNidChild.indexOf(item.nid);
-            //   if (hasOwnNid === -1) {
-            //     map[repeatActInfo[0].nid].children.push(item);
-            //     console.log(repeatActInfo[0].key);
-            //   }
-            // } else {
-            //   console.log(parent.key);
-            // }
             parent.children.push(item);
           } else if (parent.children.length > 0) {
             const includeNidChild = parent.children.map(
@@ -266,10 +216,14 @@ export const useStore = defineStore("main", {
             const hasOwnNid = includeNidChild.indexOf(item.nid);
             if (hasOwnNid === -1) {
               parent.children.push(item);
+            } else {
+              const stayChid = parent.children.filter(
+                (item: nodeItem) => item.parentNid == parent.nid
+              );
+              parent.children = stayChid;
             }
           }
         } else {
-          // console.log("root 賦值: ", item.key);
           result.push(item);
         }
       });
@@ -290,6 +244,17 @@ export const useStore = defineStore("main", {
       // };
       this.spFloorOneTree.children = [];
       this.spFloorOneTree.children = tree;
+
+      //////////////////
+      // re nid 順序
+      // const reOriNidGroup = this.newSpFloorOneTree.map((item) => item.nid);
+      // this.newSpFloorOneTree.forEach((ori, oriIndex) => {
+      //   const order = oriIndex - 1;
+      //   if (ori.parentNid) {
+      //     ori.parentNid = reOriNidGroup[Number(order)];
+      //   }
+      // });
+      //////////////////
     },
   },
   getters: {
