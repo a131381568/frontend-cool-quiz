@@ -3,13 +3,17 @@
 Demo 連結: [https://dev.puraliena.com/](https://dev.puraliena.com/)
 
 
+---
+
+
 ## 一、問題敘述與解決
+
 
 ### A. 資料結構與維護
 
 此題目的功能為夠無限生長的樹狀結構，一開始做**第一版**的時候，是直接把使用者輸入的文字陣列，轉換成可以給 Vue 渲染的樹結構，但是，這樣子更新和刪除會有問題，沒辦法好好管理。<p>
 
-為了解決當下的資料結構不好維護的問題，查了資料以後做了**第二版**，將資料架構改為[二維陣列](https://raw.githubusercontent.com/a131381568/frontend-cool-quiz/main/quiz-two/doc/tree-architecture.jpg)的父子關係：
+為了解決當下的資料結構不好維護的問題，查了資料以後做了**第二版**，將資料架構改為[二維陣列](https://raw.githubusercontent.com/a131381568/frontend-cool-quiz/main/quiz-two/doc/tree-logic.jpg)的父子關係：
 
 - **子層物件** - 子層則只需要管好自己的值
   ``` javascript 
@@ -50,30 +54,36 @@ Demo 連結: [https://dev.puraliena.com/](https://dev.puraliena.com/)
 
 #### 1. 限定範圍
 
-**第二版**的作法是藉由使用者隨意輸入字串，再統一將**每行字串**都算過一輪，而且還是經過父子陣列構築，系統運作的不是很穩定。<p>
+先前**第二版**的作法是藉由使用者隨意輸入字串，再統一將**每行字串**都算過一輪，而且還是經過父子陣列構築，系統運作的不是很穩定。<p>
 
-**第三版**，是藉由縮小、限定輸入字串的範圍，拉出預先運算的空間。
+最後**第三版**改為縮小、限定輸入字串的範圍，拉出預先運算的空間。
 - [環境變數說明](https://github.com/a131381568/frontend-cool-quiz/tree/main/quiz-two#%E4%B8%89%E5%85%B6%E5%AE%83%E8%AA%AA%E6%98%8E)
-- [邏輯圖說明](https://###)
+- [組件架構圖](https://github.com/a131381568/frontend-cool-quiz/tree/main/quiz-two#a-%E7%B5%84%E4%BB%B6%E6%9E%B6%E6%A7%8B%E5%9C%96)
 
 #### 2. 簡化結構
 
 **第三版**最後還是放棄採用**二維陣列**，父子結構的管理方式，而是改採取只有**一種**活動陣列、另外**原始**陣列為輔的機制。
 
-- [邏輯圖說明](https://###)
+- [邏輯圖說明](https://github.com/a131381568/frontend-cool-quiz/tree/main/quiz-two#b-%E9%82%8F%E8%BC%AF%E5%9C%96)
+
+
+---
+
 
 
 ## 二、文件說明
 
-## A. 組件架構圖
-...
 
-## B. 邏輯圖
-...
+### A. 組件架構圖
+![tree-architecture-v3](https://raw.githubusercontent.com/a131381568/frontend-cool-quiz/main/quiz-two/doc/tree-architecture-v3.jpg)
 
 
+### B. 邏輯圖
+![tree-logic-v3](https://raw.githubusercontent.com/a131381568/frontend-cool-quiz/main/quiz-two/doc/tree-logic-v3.jpg)
 
-## C. 測試案例
+
+
+### C. 基本規格
 
 #### 1. 畫面分為兩側 - 輸入區 / 預覽區
 
@@ -85,7 +95,7 @@ Demo 連結: [https://dev.puraliena.com/](https://dev.puraliena.com/)
 
 #### 2. 輸入區中，每行的 Key / Value 輸入框內容，可與預覽區相對應
 
-![test-2-1](https://raw.githubusercontent.com/a131381568/frontend-cool-quiz/main/quiz-two/doc/test2/test-2-1.jpg)
+  ![test-2-1](https://raw.githubusercontent.com/a131381568/frontend-cool-quiz/main/quiz-two/doc/test2/test-2-1.jpg)
 
 
 #### 3. 使用者可自行增減行數。
@@ -103,6 +113,11 @@ Demo 連結: [https://dev.puraliena.com/](https://dev.puraliena.com/)
   ![test-4-1](https://raw.githubusercontent.com/a131381568/frontend-cool-quiz/main/quiz-two/doc/test2/test-4-2.jpg)
 
 
+
+---
+
+
+
 ## 三、其它說明
 
 - SCSS 管理 - /src/assets/scss
@@ -111,7 +126,12 @@ Demo 連結: [https://dev.puraliena.com/](https://dev.puraliena.com/)
   - `NODE_ENV` - 運行模式 ( development / production ) 
   - `VITE_APP_BUILD_COUNT` - 每筆字符切割最大數 ( 預設為 **10** )
 
-## 本機運行
+
+---
+
+
+
+## 四、本機運行
 確定環境變數正確後。
 安裝 NPM 依賴並運行。
 ```shell

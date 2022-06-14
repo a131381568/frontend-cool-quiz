@@ -158,6 +158,7 @@ Demo 連結: [https://project.puraliena.com/](https://project.puraliena.com/)
   - 無權限強制轉跳登入頁 ( public 判斷 ) - /src/router
 - 針對使用者瀏覽器開多分頁，後續的非同步操作行為，暫存資料的讀取判斷
 - 全部環境變數說明 ( .env.development / .env.production )：
+  - `NODE_ENV` - 運行模式 ( development / production ) 
   - `VITE_APP_API_KEY` - 連結 Firebase 資料庫參數
   - `VITE_APP_AUTH_DOMAIN` - 連結 Firebase 資料庫參數
   - `VITE_APP_PROJECT_ID` - 連結 Firebase 資料庫參數
@@ -170,7 +171,7 @@ Demo 連結: [https://project.puraliena.com/](https://project.puraliena.com/)
 
 
 
-## D. 本機運行
+### D. 本機運行
 確定環境變數都正確的狀態下，安裝 NPM 依賴並運行。
 ```shell
 npm install
