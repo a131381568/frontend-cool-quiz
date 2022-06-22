@@ -1,4 +1,4 @@
-# Quiz 1 - Random User
+# Random User
 
 Demo 連結: [https://project.puraliena.com/](https://project.puraliena.com/)
 
