@@ -13,7 +13,7 @@ Demo 連結: [https://dev.puraliena.com/](https://dev.puraliena.com/)
 
 此題目的功能為夠無限生長的樹狀結構，一開始做**第一版**的時候，是直接把使用者輸入的文字陣列，轉換成可以給 Vue 渲染的樹結構，但是，這樣子更新和刪除會有問題，沒辦法好好管理。<p>
 
-為了解決當下的資料結構不好維護的問題，查了資料以後做了**第二版**，將資料架構改為[二維陣列](https://raw.githubusercontent.com/a131381568/frontend-cool-quiz/main/quiz-two/doc/tree-logic.jpg)的父子關係：
+為了解決當下的資料結構不好維護的問題，查了資料以後做了**第二版**，將資料架構改為[二維陣列](https://raw.githubusercontent.com/a131381568/vue-multi-app/main/nested-tree/doc/tree-logic.jpg)的父子關係：
 
 - **子層物件** - 子層則只需要管好自己的值
   ``` javascript 
@@ -48,7 +48,7 @@ Demo 連結: [https://dev.puraliena.com/](https://dev.puraliena.com/)
 
 ### B. 效能瓶頸
 
-因為是樹狀無窮層級，所以組件跟部分函式，是採用遞迴的方式去設計，加上使用者在輸入框內任意輸入和更改，會造成 Store 內的 Getters 會一直運算，[遞迴組件](https://raw.githubusercontent.com/a131381568/frontend-cool-quiz/main/quiz-two/doc/tree-architecture.jpg)也一直渲染，儘管經過鎖按鍵、防抖，記憶體還是會被吃光，無法正常運作。<p>
+因為是樹狀無窮層級，所以組件跟部分函式，是採用遞迴的方式去設計，加上使用者在輸入框內任意輸入和更改，會造成 Store 內的 Getters 會一直運算，[遞迴組件](https://raw.githubusercontent.com/a131381568/vue-multi-app/main/nested-tree/doc/tree-architecture.jpg)也一直渲染，儘管經過鎖按鍵、防抖，記憶體還是會被吃光，無法正常運作。<p>
 
 > 以上問題，最後還是決定：__限定範圍__ + **簡化結構**，才有辦法讓系統穩定運作。
 
@@ -57,14 +57,14 @@ Demo 連結: [https://dev.puraliena.com/](https://dev.puraliena.com/)
 先前**第二版**的作法是藉由使用者隨意輸入字串，再統一將**每行字串**都算過一輪，而且還是經過父子陣列構築，系統運作的不是很穩定。<p>
 
 最後**第三版**改為縮小、限定輸入字串的範圍，拉出預先運算的空間。
-- [環境變數說明](https://github.com/a131381568/frontend-cool-quiz/tree/main/quiz-two#%E4%B8%89%E5%85%B6%E5%AE%83%E8%AA%AA%E6%98%8E)
-- [組件架構圖](https://github.com/a131381568/frontend-cool-quiz/tree/main/quiz-two#a-%E7%B5%84%E4%BB%B6%E6%9E%B6%E6%A7%8B%E5%9C%96)
+- [環境變數說明](https://github.com/a131381568/vue-multi-app/tree/main/nested-tree#%E4%B8%89%E5%85%B6%E5%AE%83%E8%AA%AA%E6%98%8E)
+- [組件架構圖](https://github.com/a131381568/vue-multi-app/tree/main/nested-tree#a-%E7%B5%84%E4%BB%B6%E6%9E%B6%E6%A7%8B%E5%9C%96)
 
 #### 2. 簡化結構
 
 **第三版**最後還是放棄採用**二維陣列**，父子結構的管理方式，而是改採取只有**一種**活動陣列、另外**原始**陣列為輔的機制。
 
-- [邏輯圖說明](https://github.com/a131381568/frontend-cool-quiz/tree/main/quiz-two#b-%E9%82%8F%E8%BC%AF%E5%9C%96)
+- [邏輯圖說明](https://github.com/a131381568/vue-multi-app/tree/main/nested-tree#b-%E9%82%8F%E8%BC%AF%E5%9C%96)
 
 
 ---
@@ -75,11 +75,11 @@ Demo 連結: [https://dev.puraliena.com/](https://dev.puraliena.com/)
 
 
 ### A. 組件架構圖
-![tree-architecture-v3](https://raw.githubusercontent.com/a131381568/frontend-cool-quiz/main/quiz-two/doc/tree-architecture-v3.jpg)
+![tree-architecture-v3](https://raw.githubusercontent.com/a131381568/vue-multi-app/main/nested-tree/doc/tree-architecture-v3.jpg)
 
 
 ### B. 邏輯圖
-![tree-logic-v3](https://raw.githubusercontent.com/a131381568/frontend-cool-quiz/main/quiz-two/doc/tree-logic-v3.jpg)
+![tree-logic-v3](https://raw.githubusercontent.com/a131381568/vue-multi-app/main/nested-tree/doc/tree-logic-v3.jpg)
 
 
 
@@ -88,29 +88,29 @@ Demo 連結: [https://dev.puraliena.com/](https://dev.puraliena.com/)
 #### 1. 畫面分為兩側 - 輸入區 / 預覽區
 
 - 預設為下圖
-  ![test-1-1](https://raw.githubusercontent.com/a131381568/frontend-cool-quiz/main/quiz-two/doc/test2/test-1-1.jpg)
+  ![test-1-1](https://raw.githubusercontent.com/a131381568/vue-multi-app/main/nested-tree/doc/test2/test-1-1.jpg)
 - 新增資料後
-  ![test-1-2](https://raw.githubusercontent.com/a131381568/frontend-cool-quiz/main/quiz-two/doc/test2/test-1-2.jpg)
+  ![test-1-2](https://raw.githubusercontent.com/a131381568/vue-multi-app/main/nested-tree/doc/test2/test-1-2.jpg)
 
 
 #### 2. 輸入區中，每行的 Key / Value 輸入框內容，可與預覽區相對應
 
-  ![test-2-1](https://raw.githubusercontent.com/a131381568/frontend-cool-quiz/main/quiz-two/doc/test2/test-2-1.jpg)
+  ![test-2-1](https://raw.githubusercontent.com/a131381568/vue-multi-app/main/nested-tree/doc/test2/test-2-1.jpg)
 
 
 #### 3. 使用者可自行增減行數。
 - 新增行數
-  ![test-3-1](https://raw.githubusercontent.com/a131381568/frontend-cool-quiz/main/quiz-two/doc/test2/test-3-1.jpg)
+  ![test-3-1](https://raw.githubusercontent.com/a131381568/vue-multi-app/main/nested-tree/doc/test2/test-3-1.jpg)
 - 刪除行數
-  ![test-3-2](https://raw.githubusercontent.com/a131381568/frontend-cool-quiz/main/quiz-two/doc/test2/test-3-2.jpg)
+  ![test-3-2](https://raw.githubusercontent.com/a131381568/vue-multi-app/main/nested-tree/doc/test2/test-3-2.jpg)
 
 
 #### 4. 有無輸入 Key / Value
 
 - 有輸入 Key，未輸入 Value 時，瀏覽區預設為空字串
-  ![test-4-1](https://raw.githubusercontent.com/a131381568/frontend-cool-quiz/main/quiz-two/doc/test2/test-4-1.jpg)
+  ![test-4-1](https://raw.githubusercontent.com/a131381568/vue-multi-app/main/nested-tree/doc/test2/test-4-1.jpg)
 - 只輸入 Value，但 Key 為空，該行 (Pair) 不會顯示在預覽區
-  ![test-4-1](https://raw.githubusercontent.com/a131381568/frontend-cool-quiz/main/quiz-two/doc/test2/test-4-2.jpg)
+  ![test-4-1](https://raw.githubusercontent.com/a131381568/vue-multi-app/main/nested-tree/doc/test2/test-4-2.jpg)
 
 
 

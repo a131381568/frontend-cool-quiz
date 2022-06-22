@@ -1,5 +1,5 @@
 {
-  "name": "frontend-cool-case-two",
+  "name": "nested-tree",
   "version": "2.1.0",
   "scripts": {
     "dev": "vite",

@@ -18,9 +18,9 @@ Demo 連結: [https://project.puraliena.com/](https://project.puraliena.com/)
   - **分頁設計** - 因為資料量很大，必須設計完善的分頁機制，由於全部的資料都存在前端，都需要由前端計算，計算參數和資料的總數、顯示數量有關，需要讓分頁模組依據`不同的總數`跟`顯示數量`變化。<p>
     > Store 設置**假資料**模擬不同情境，做**小型測試**，這裡是設計成僅顯示 5 頁主要是前 3 頁和結尾 3 頁的邏輯需要多加嘗試。
   - **組件共用** - `首頁全部資料`和`已收藏資料`要共用組件，導致不同情境時，會吃到彼此的資料。<p>
-    > 釐清彼此的耦合關係，就能夠比較清楚的撰寫邏輯，下方文件說明有[組件路由架構圖](https://github.com/a131381568/frontend-cool-quiz/tree/main/quiz-one#1-%E7%B5%84%E4%BB%B6%E8%B7%AF%E7%94%B1%E6%9E%B6%E6%A7%8B%E5%9C%96)和[邏輯說明圖](https://github.com/a131381568/frontend-cool-quiz/tree/main/quiz-one#2-%E9%82%8F%E8%BC%AF%E8%AA%AA%E6%98%8E%E5%9C%96)。
+    > 釐清彼此的耦合關係，就能夠比較清楚的撰寫邏輯，下方文件說明有[組件路由架構圖](https://github.com/a131381568/vue-multi-app/tree/main/random-user#1-%E7%B5%84%E4%BB%B6%E8%B7%AF%E7%94%B1%E6%9E%B6%E6%A7%8B%E5%9C%96)和[邏輯說明圖](https://github.com/a131381568/vue-multi-app/tree/main/random-user#2-%E9%82%8F%E8%BC%AF%E8%AA%AA%E6%98%8E%E5%9C%96)。
   - **使用者情境** - 因為要重新整理、關掉後再打開資料還是存在，所以會延伸很多情境，導致資料有問題。<p>
-    > 將情境全部列出來，才有辦法確保前面製作好的功能沒問題，下方文件說明有全部的[功能測試案例](https://github.com/a131381568/frontend-cool-quiz/tree/main/quiz-one#b-%E5%8A%9F%E8%83%BD%E6%B8%AC%E8%A9%A6%E6%A1%88%E4%BE%8B)。
+    > 將情境全部列出來，才有辦法確保前面製作好的功能沒問題，下方文件說明有全部的[功能測試案例](https://github.com/a131381568/vue-multi-app/tree/main/random-user#b-%E5%8A%9F%E8%83%BD%E6%B8%AC%E8%A9%A6%E6%A1%88%E4%BE%8B)。
 
 
 ---
@@ -33,13 +33,13 @@ Demo 連結: [https://project.puraliena.com/](https://project.puraliena.com/)
 ### A. 圖表說明
 
 #### 1. 組件路由架構圖
-![architecture](https://raw.githubusercontent.com/a131381568/frontend-cool-quiz/main/quiz-one/doc/architecture.jpg)
+![architecture](https://raw.githubusercontent.com/a131381568/vue-multi-app/main/random-user/doc/architecture.jpg)
 
 #### 2. 邏輯說明圖
-![logic](https://raw.githubusercontent.com/a131381568/frontend-cool-quiz/main/quiz-one/doc/logic-3.jpg)
+![logic](https://raw.githubusercontent.com/a131381568/vue-multi-app/main/random-user/doc/logic-3.jpg)
 
 #### 3. Firebase 集合
-![firebasedata](https://raw.githubusercontent.com/a131381568/frontend-cool-quiz/main/quiz-one/doc/firebasedata.gif)
+![firebasedata](https://raw.githubusercontent.com/a131381568/vue-multi-app/main/random-user/doc/firebasedata.gif)
 
 
 ### B. 功能測試案例
