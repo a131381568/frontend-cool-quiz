@@ -1,4 +1,4 @@
-# Quiz 2 - Nested Key-Value Pair Tree Viewer
+# Nested Key-Value Pair Tree Viewer
 
 Demo 連結: [https://dev.puraliena.com/](https://dev.puraliena.com/)
 
